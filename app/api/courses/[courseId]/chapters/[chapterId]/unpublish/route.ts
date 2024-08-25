@@ -13,15 +13,6 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { data: courseOwner, error: courseOwnerError } = await supabase
-      .from('courses')
-      .select('user_id')
-      .eq('id', params.courseId)
-      .single();
-
-    if (courseOwnerError || courseOwner.user_id !== user.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
 
     const { data: unpublishedChapter, error: unpublishError } = await supabase
       .from('chapters')

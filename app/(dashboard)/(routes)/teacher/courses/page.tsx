@@ -20,7 +20,7 @@ const CoursesPage = async () => {
     const { data: courses, error: coursesError } = await supabase
         .from('courses')
         .select('*')
-        .eq('user_id', user.id)
+
         .order('created_at', { ascending: false });
 
     if (coursesError) {

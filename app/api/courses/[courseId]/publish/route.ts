@@ -32,7 +32,6 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
         )
       `)
       .eq('id', courseId)
-      .eq('user_id', user.id)
       .single();
 
     if (courseError || !course) {
@@ -54,7 +53,6 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
       .from('courses')
       .update({ is_published: true })
       .eq('id', courseId)
-      .eq('user_id', user.id);
 
     if (publishError) {
       ////console.log("[COURSE_ID_PUBLISH]", publishError);

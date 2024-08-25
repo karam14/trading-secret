@@ -17,20 +17,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Check if the course belongs to the user
-    const courseOwner = await supabase
-      .from('courses')
-      .select('user_id')
-      .eq('id', params.courseId)
-      .single();
 
-    if (courseOwner.error) {
-      throw new Error(courseOwner.error.message);
-    }
-
-    if (courseOwner.data.user_id !== user.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
 
     // Get the attachment to retrieve the file name before deletion
     const { data: attachment, error: attachmentError } = await supabase

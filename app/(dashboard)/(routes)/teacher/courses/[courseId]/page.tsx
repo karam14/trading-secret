@@ -74,9 +74,9 @@ const CourseIdPage = async ({
   if (!course) {
     return redirect("/");
   }
-  if (course.user_id !== user.id) {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
+  // if (course.user_id !== user.id) {
+  //   return new NextResponse("Unauthorized", { status: 401 });
+  // }
   const { data: categories } = await supabase
     .from('categories')
     .select()

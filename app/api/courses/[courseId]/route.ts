@@ -9,6 +9,7 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
         // Authenticate the user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
+            console.log("[COURSE_ID] Unauthorized");
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
@@ -32,7 +33,6 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
             .from('courses')
             .update(values)
             .eq('id', courseId)
-            .eq('user_id', user.id)
             .select()  // Select the updated course to return
             .single();
 
@@ -120,7 +120,7 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
       const { data: course, error: deleteCourseError } = await supabase
           .from('courses')
           .delete()
-          .match({ id: courseId, user_id: user.id })
+          .match({ id: courseId })
           .select()  // Ensure to select the fields you need
           .single();  // `single()` ensures that we get the single deleted row back
 

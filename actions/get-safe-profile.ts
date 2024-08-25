@@ -11,8 +11,8 @@ export default async function getSafeProfile() {
 
   const userId = session.session?.user.id;
   const email = session.session.user.email || ""; // Provide a fallback here
-
   const token = session.session.access_token;
+
   interface DecodedToken {
     user_role: string;
     [key: string]: any;
@@ -20,11 +20,35 @@ export default async function getSafeProfile() {
 
   const roleClaim = token ? (jwtDecode(token) as DecodedToken).user_role : null;
 
-  const { data: profile, error: profileError } = await supabase
+  // Attempt to fetch the profile
+  let { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('name, image_url, created_at, updated_at')
     .eq('id', userId)
     .single();
+
+  // If no profile exists, insert a new one
+  if (profileError && profileError.code === 'PGRST116') { // PGRST116 corresponds to "No data found"
+    const { error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: userId,
+        name: email, // Use email as a placeholder for name
+        image_url: null, // Default value, can be updated later
+      });
+
+    if (insertError) {
+      console.error("[getSafeProfile] Error inserting new profile:", insertError);
+      return null;
+    }
+
+    // Fetch the newly created profile
+    ({ data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('name, image_url, created_at, updated_at')
+      .eq('id', userId)
+      .single());
+  }
 
   if (profileError) {
     console.error("[getSafeProfile] Error fetching profile:", profileError);
