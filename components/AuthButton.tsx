@@ -1,37 +1,46 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import jwt_decode from "jwt-decode"; // You'll need to install this package
 
 export default async function AuthButton() {
   const supabase = createClient();
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    return (
+      <Link
+        href="/login"
+        className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+      >
+        Login
+      </Link>
+    );
+  }
+
+  const { user } = session;
+
+  // Decode the JWT token to get the role
+  const token = session.access_token;
+  const decodedToken = jwt_decode(token);
+  const role = decodedToken.role || "No role found";
 
   const signOut = async () => {
-    "use server";
-
-    const supabase = createClient();
     await supabase.auth.signOut();
     return redirect("/login");
   };
 
-  return user ? (
+  return (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      Hey, {user.email} ({role})!
       <form action={signOut}>
         <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
           Logout
         </button>
       </form>
     </div>
-  ) : (
-    <Link
-      href="/login"
-      className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
-    >
-      Login
-    </Link>
   );
 }

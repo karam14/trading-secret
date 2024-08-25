@@ -1,0 +1,58 @@
+// types.ts
+
+export interface Chapter {
+  id: string;
+  title: string;
+  description: string;
+  is_free: boolean;
+  is_published: boolean;
+  video_url: string | null;
+  video_name: string | null;
+  course_id: string;
+  created_at: string;
+  updated_at: string;
+  mux_data?: MuxData | null;
+}
+
+export interface MuxData {
+  id: string;
+  chapter_id: string;
+  asset_id: string;
+  playback_id: string;
+  created_at: string;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+  chapters: Chapter[];
+  categoryId: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserProgress {
+  id: string;
+  user_id: string;
+  chapter_id: string;
+  course_id: string;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+// This type represents a course with progress and category data included.
+export type CourseWithProgressWithCategory = Course & {
+  category: Category | null;  // The category associated with the course
+  chapters: { id: string }[];  // A list of chapter IDs associated with the course
+  progress: number | null;  // The user's progress in the course
+};
+

@@ -1,6 +1,11 @@
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
-
+import AuthButton from "@/components/AuthButton";
+import { ToastProvider } from "@/components/providers/toaster-provider";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+ 
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -18,11 +23,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className}>
-      <body className="bg-background text-foreground">
-        <main className="min-h-screen flex flex-col items-center">
+
+
+    <body>
+        <main>
+          <ToastProvider />
           {children}
         </main>
-      </body>
+        </body>
     </html>
   );
 }

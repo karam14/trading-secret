@@ -1,4 +1,7 @@
+// utils/supabase/server.ts
+
 import { createServerClient } from "@supabase/ssr";
+
 import { cookies } from "next/headers";
 
 export const createClient = () => {
@@ -24,6 +27,6 @@ export const createClient = () => {
           }
         },
       },
-    },
+    }
   );
 };
