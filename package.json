@@ -32,6 +32,7 @@
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.427.0",
     "next": "latest",
+    "next-cloudinary": "^6.10.1",
     "postcss": "8.4.33",
     "query-string": "^9.1.0",
     "react": "18.2.0",
