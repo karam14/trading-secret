@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import jwt_decode from "jwt-decode"; // You'll need to install this package
+import { jwtDecode } from "jwt-decode";
 
 export default async function AuthButton() {
   const supabase = createClient();
@@ -25,7 +25,7 @@ export default async function AuthButton() {
 
   // Decode the JWT token to get the role
   const token = session.access_token;
-  const decodedToken = jwt_decode(token);
+  const decodedToken: { role?: string } = jwtDecode(token); // Correctly call jwtDecode
   const role = decodedToken.role || "No role found";
 
   const signOut = async () => {

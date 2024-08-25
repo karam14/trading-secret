@@ -1,3 +1,4 @@
+import { createClient } from "@/utils/supabase/server";
 import { jwtDecode } from "jwt-decode";
 
 export default async function getSafeProfile() {

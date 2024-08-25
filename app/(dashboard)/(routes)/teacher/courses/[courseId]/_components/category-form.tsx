@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,13 +27,14 @@ const formSchema = z.object({
     categoryId: z.string().min(1),
 });
 
-interface  CategoryFormProps {
+interface CategoryFormProps {
     initialData: {
         categoryId: string;
     };
     courseId: string;
-    options: {label: string, value: string}[];
-};
+    options: { label: string, value: string }[];
+}
+
 export const CategoryForm = ({
     initialData,
     courseId,
@@ -47,21 +48,22 @@ export const CategoryForm = ({
     });
     const { isSubmitting, isValid } = form.formState;
     const router = useRouter();
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-
             await axios.patch(`/api/courses/${courseId}`, values);
             toast.success("Course category updated successfully");
             toggleEdit();
             router.refresh();
-
         } catch (error: any) {
             toast.error(`An error occurred. Please try again. ${error.message}`);
         }
     };
-    const selectdOption = options.find((option) => option.value === initialData.categoryId);
+
+    const selectedOption = options.find((option) => option.value === initialData.categoryId);
+
     return (
-        <div className="mt-6 border bg-slate-100 rounded-md  p-6">
+        <div className="mt-6 border bg-slate-100 rounded-md p-6">
             <div className="font-medium flex items-center justify-between">
                 Course Category
                 <Button variant="ghost" onClick={toggleEdit}>
@@ -77,8 +79,7 @@ export const CategoryForm = ({
             {!isEditing && (
                 <p className={cn(
                     "", !initialData.categoryId && "text-slate-500 italic"
-                )}>{selectdOption?.label || "No Category"}</p>
-
+                )}>{selectedOption?.label || "No Category"}</p>
             )}
             {isEditing && (
                 <Form {...form}>
@@ -88,15 +89,16 @@ export const CategoryForm = ({
                             name="categoryId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel htmlFor="description">Course Description</FormLabel>
+                                    <FormLabel htmlFor="categoryId">Course Category</FormLabel>
                                     <FormControl>
-                                        <ComboBox 
-                                        options={...options}
-                                        {...field}
+                                        <ComboBox
+                                            options={options}
+                                            value={field.value}
+                                            onChange={(value) => field.onChange(value)} // Provide the onChange handler
                                         />
                                     </FormControl>
                                     <FormDescription>
-                                        Enter the description of your course
+                                        Select the category for your course
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -106,7 +108,6 @@ export const CategoryForm = ({
                             type="submit"
                             disabled={!isValid || isSubmitting}
                             className="bg-sky-700 rounded-md px-4 py-2 text-foreground"
-
                         >
                             Save
                         </Button>

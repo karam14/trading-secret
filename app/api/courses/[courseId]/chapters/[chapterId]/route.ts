@@ -44,7 +44,7 @@ export async function DELETE(req: Request, { params }: { params: { chapterId: st
       .eq('chapter_id', chapterId);
 
     // Delete associated Mux assets and corresponding mux_data records
-    for (const muxData of muxDataList) {
+    for (const muxData of muxDataList!) {
       try {
         await mux.video.assets.delete(muxData.asset_id);
 
