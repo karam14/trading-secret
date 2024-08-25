@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         const { data, error } = await supabase.auth.getSession();
-        const token = data.session.access_token;
+        const token = data.session!.access_token;
         const decodedToken = jwtDecode(token);
         ////console.log("Session data:", decodedToken);
         if (userError || !user) {

@@ -30,8 +30,12 @@ const CreateCategoryPage = () => {
             const response = await axios.post("/api/categories", values);
             toast.success("Category created successfully");
             router.push(`/teacher/courses/categories`);
-        } catch (error) {
-            toast.error(`An error occurred. Please try again. ${error.message}`);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message); // Now TypeScript knows error has a 'message' property
+            } else {
+                toast.error("An unknown error occurred");
+            }
         }
     };
     
@@ -65,7 +69,7 @@ const CreateCategoryPage = () => {
                             <Link href="/">
                                 <Button variant="ghost">Cancel</Button>
                             </Link>
-                            <Button type="submit" disabled={!isValid || isSubmitting} loading={isSubmitting}>Create</Button>
+                            <Button type="submit" disabled={!isValid || isSubmitting}>Create</Button>
                         </div>
                     </form>
                 </Form>

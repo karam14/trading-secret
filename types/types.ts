@@ -1,6 +1,7 @@
 // types.ts
 
 export interface Chapter {
+  userProgress: any;
   id: string;
   title: string;
   description: string;
@@ -36,9 +37,10 @@ export interface Course {
 export interface Category {
   id: string;
   name: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
+
 
 export interface UserProgress {
   id: string;
@@ -55,4 +57,14 @@ export type CourseWithProgressWithCategory = Course & {
   chapters: { id: string }[];  // A list of chapter IDs associated with the course
   progress: number | null;  // The user's progress in the course
 };
+export interface SafeProfile {
+  id: string;                  // The user's ID from the session
+  email: string;               // The user's email from the session
+  role: string | null;         // The role extracted from the JWT token
+  name: string;                // The name from the profile or fallback to email
+  image_url: string | null;    // The user's profile image URL or null if not set
+  created_at: string | null;   // The timestamp when the profile was created, formatted as ISO string
+  updated_at: string | null;   // The timestamp when the profile was last updated, formatted as ISO string
+}
+
 

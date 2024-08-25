@@ -9,15 +9,16 @@ import { Pencil, Save, Trash, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { Category } from "@/types/types";
 
 const supabase = createClient();
 
 const CategoriesPage = () => {
-    const [categories, setCategories] = useState([]);
-    const [newCategory, setNewCategory] = useState("");
-    const [editingCategory, setEditingCategory] = useState(null);
-    const [categoryToDelete, setCategoryToDelete] = useState(null); // Track which category to delete
-    const [isDialogOpen, setIsDialogOpen] = useState(false); // Control the dialog open state
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [newCategory, setNewCategory] = useState<string>("");
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -59,14 +60,20 @@ const CategoriesPage = () => {
 
             setNewCategory("");
             toast.success("Category added successfully");
-        } catch (error) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message); // Now TypeScript knows error has a 'message' property
+            } else {
+                toast.error("An unknown error occurred");
+            }
         }
     };
 
-    const handleEditCategory = (id) => {
-        const categoryToEdit = categories.find(category => category.id === id);
-        setEditingCategory({ ...categoryToEdit });
+    const handleEditCategory = (id: string) => {
+        const categoryToEdit = categories.find((category) => category.id === id);
+        if (categoryToEdit) {
+            setEditingCategory({ ...categoryToEdit });
+        }
     };
 
     const handleSaveCategory = async () => {
@@ -90,8 +97,12 @@ const CategoriesPage = () => {
             ));
             setEditingCategory(null);
             toast.success("Category updated successfully");
-        } catch (error) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message); // Now TypeScript knows error has a 'message' property
+            } else {
+                toast.error("An unknown error occurred");
+            }
         }
     };
 
@@ -99,10 +110,11 @@ const CategoriesPage = () => {
         setEditingCategory(null);  // Reset the editing state
     };
 
-    const handleOpenDialog = (category) => {
+    const handleOpenDialog = (category: Category) => {
         setCategoryToDelete(category);
         setIsDialogOpen(true); // Open the dialog
     };
+    
 
     const handleCloseDialog = () => {
         setIsDialogOpen(false); // Close the dialog
@@ -125,8 +137,12 @@ const CategoriesPage = () => {
             setCategories(categories.filter(category => category.id !== categoryToDelete.id));
             toast.success("Category deleted successfully");
             handleCloseDialog(); // Close the dialog after deletion
-        } catch (error) {
-            toast.error(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message); // Now TypeScript knows error has a 'message' property
+            } else {
+                toast.error("An unknown error occurred");
+            }
         }
     };
 

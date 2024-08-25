@@ -18,7 +18,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const { data: session } = await supabase.auth.getUser();
 
 
-  const userId = session.user?.id;
+  const userId = session.user?.id ?? '';
 
   const { data: categories, error: categoriesError } = await supabase
     .from('categories')

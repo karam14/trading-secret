@@ -7,6 +7,7 @@ import { getProgress } from "@/actions/get-progress"; // Server-side function to
 
 interface CourseSidebarProps {
   course: CourseWithProgressWithCategory;
+  progressCount: number;
 }
 
 export const CourseSidebar = async ({ course }: CourseSidebarProps) => {
@@ -32,7 +33,7 @@ export const CourseSidebar = async ({ course }: CourseSidebarProps) => {
   }
 
   // Fetch progress
-  const progressCount: number = await getProgress(userId, course.id);
+  const progressCount: number = (await getProgress(userId, course.id)) ?? 0;
 
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">

@@ -44,12 +44,13 @@ export const ChapterVideoForm = ({
     }
   };
 
-  const handleFileUpload = (url: string | null) => {
+  const handleFileUpload = (url?: string) => {
     if (url) {
       const videoName = url.split('/').pop() || 'Unknown Video Name';
       onSubmit({ video_url: url, video_name: videoName });
     }
   };
+  
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 dark:bg-gray-800 dark:text-slate-300">

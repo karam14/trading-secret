@@ -31,10 +31,13 @@ const CreatePage = () => {
             //console.log(response.data);
             toast.success("Course created successfully");
         }
-        catch (error) {
-            toast.error(`"An error occurred. Please try again. ${error.message}"`);
-
-    }
+        catch (error: unknown) {
+            if (error instanceof Error) {
+                toast.error(error.message); // Now TypeScript knows error has a 'message' property
+            } else {
+                toast.error("An unknown error occurred");
+            }
+        }
 }
     return (  
         <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
@@ -68,7 +71,7 @@ const CreatePage = () => {
                 <Link href="/">
                 <Button variant="ghost">Cancel</Button>
                 </Link>
-                <Button type="submit" disabled={!isValid || isSubmitting} loading={isSubmitting}>Continue</Button>
+                <Button type="submit" disabled={!isValid || isSubmitting} >Continue</Button>
             </div>
             </form>
         </Form>

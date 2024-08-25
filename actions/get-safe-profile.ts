@@ -1,4 +1,3 @@
-import { createClient } from "@/utils/supabase/server";
 import { jwtDecode } from "jwt-decode";
 
 export default async function getSafeProfile() {
@@ -10,14 +9,16 @@ export default async function getSafeProfile() {
   }
 
   const userId = session.session?.user.id;
+  const email = session.session.user.email || ""; // Provide a fallback here
 
-  // Extract role directly from the JWT
   const token = session.session.access_token;
-  const roleClaim = token ? jwtDecode(token).user_role : null
-  //console.log("[getSafeProfile] Role claim:", roleClaim);
+  interface DecodedToken {
+    user_role: string;
+    [key: string]: any;
+  }
 
+  const roleClaim = token ? (jwtDecode(token) as DecodedToken).user_role : null;
 
-  // Fetch additional profile data from the custom profiles table
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('name, image_url, created_at, updated_at')
@@ -29,12 +30,11 @@ export default async function getSafeProfile() {
     return null;
   }
 
-  // Combine data from auth.users and profiles tables, and role from JWT
   const safeProfile = {
     id: userId,
-    email: session.session.user.email,
-    role: roleClaim ,
-    name: profile?.name || session.user.email,  // Use email as fallback for name
+    email,  // Use the non-undefined email here
+    role: roleClaim,
+    name: profile?.name || email,  // Use email as fallback for name
     image_url: profile?.image_url || null,
     created_at: profile?.created_at ? new Date(profile.created_at).toISOString() : null,
     updated_at: profile?.updated_at ? new Date(profile.updated_at).toISOString() : null,
