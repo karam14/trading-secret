@@ -206,7 +206,7 @@ export default function EditProfile() {
                     </label>
                     <Input
                         type="text"
-                        value={vipStatus ? " VIPانت عضو" : " VIP لا يوجد"}
+                        value={vipStatus == true ? " VIPانت عضو" : " VIP لا يوجد"}
                         disabled
                         className="bg-gray-200 dark:bg-gray-700 cursor-not-allowed"
                     />
