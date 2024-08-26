@@ -1,57 +1,83 @@
 "use client";
-import { BarChart, Compass, Layout, List, LogOutIcon } from "lucide-react";
+
+import { BarChart, Compass, Layout, List, LogOutIcon, Lock } from "lucide-react";
 import SidebarItem from "./sidebar-item";
 import { usePathname } from "next/navigation";
-const guestRotues = [
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"; // Import Tooltip components
+
+const guestRoutes = [
     {
         icon: Layout,
         label: "Dashboard",
-        href: "/"
+        href: "/",
+        disabled: false,
+        tooltip: "",
+
     },
     {
         icon: Compass,
         label: "Browse Courses",
-        href: "/browse"
+        href: "/browse",
+        disabled: false,
+        tooltip: "",
     },
     {
-        icon: LogOutIcon,
-        label: "Logout",
-        href: "/logout"
-    }
+        icon: Lock,
+        label: "VIP Section",
+        href: "#",
+        disabled: true,
+        tooltip: "قريباً"
+    },
 ];
+
 const teacherRoutes = [
     {
         icon: List,
         label: "Courses",
-        href: "/teacher/courses"
+        href: "/teacher/courses",
+        disabled: false,
+        tooltip: "",
     },
     {
         icon: BarChart,
         label: "Analytics",
-        href: "/teacher/analytics"
+        href: "/teacher/analytics",
+        disabled: false,
+        tooltip: "",
     },
-    {
-        icon: LogOutIcon,
-        label: "Logout",
-        href: "/logout"
-    }
 ];
+
 export const SidebarRoutes = () => {
     const pathname = usePathname();
     const isTeacherPage = pathname?.includes("/teacher");
-    const routes = isTeacherPage ? teacherRoutes : guestRotues;
-    
+    const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+
     return (
         <div className="flex flex-col w-full">
-            {routes.map((route) => (
-             
-             <SidebarItem
-                key={route.href}
-                icon={route.icon}
-                label={route.label}
-                href={route.href}
-                />
-            ))}
+        <TooltipProvider>
+            <div >
+                {routes.map((route) => (
+                    <Tooltip key={route.href}>
+                        <TooltipTrigger asChild>
+                            <div className={route.disabled ? "cursor-not-allowed opacity-50" : ""}>
+                                <SidebarItem
+                                    key={route.href}
+                                    icon={route.icon}
+                                    label={route.label}
+                                    href={route.href}
+                                    disabled={route.disabled} // Pass the disabled prop
+                                />
+                            </div>
+                        </TooltipTrigger>
+                        {route.disabled && (
+                            <TooltipContent side="right">
+                                <p>{route.tooltip}</p>
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+                ))}
+            </div>
+        </TooltipProvider>
         </div>
-    )
+    );
 }

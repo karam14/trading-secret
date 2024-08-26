@@ -14,7 +14,7 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
 
     const { courseId } = params;
 
-    // Fetch the course along with its chapters and mux_data
+
     const { data: course, error: courseError } = await supabase
       .from('courses')
       .select(`
@@ -26,7 +26,7 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
         chapters (
           id,
           is_published,
-          mux_data (
+          cloudinary_data (
             id
           )
         )

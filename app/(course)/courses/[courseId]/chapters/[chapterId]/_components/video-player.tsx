@@ -1,7 +1,8 @@
 "use client";
 
 import axios from "axios";
-import MuxPlayer from "@mux/mux-player-react";
+import { CldVideoPlayer } from "next-cloudinary";
+import 'next-cloudinary/dist/cld-video-player.css';
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 
 interface VideoPlayerProps {
-  playbackId?: string | null;
+  publicId?: string | null; // Cloudinary publicId replaces Mux playbackId
   courseId: string;
   chapterId: string;
   nextChapterId?: string;
@@ -21,7 +22,7 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({
-  playbackId,
+  publicId,
   courseId,
   chapterId,
   nextChapterId,
@@ -35,26 +36,20 @@ export const VideoPlayer = ({
 
   const onEnd = async () => {
     try {
-      //console.log("[VideoPlayer] Video ended. completeOnEnd:", completeOnEnd);
-  
       if (completeOnEnd) {
-        //console.log("[VideoPlayer] Sending progress update request...");
-  
         // Update the progress when the video ends
-        const response = await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
+        await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
           isCompleted: true,
         });
-  
-        //console.log("[VideoPlayer] Progress update response:", response.data);
-  
+
         // Show confetti if it's the last chapter
         if (!nextChapterId) {
           confetti.onOpen();
         }
-  
+
         toast.success("Progress updated");
         router.refresh();
-  
+
         // Navigate to the next chapter if it exists
         if (nextChapterId) {
           router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
@@ -65,31 +60,22 @@ export const VideoPlayer = ({
       toast.error("Something went wrong. Please try again.");
     }
   };
-  
 
   return (
-    <div className="relative aspect-video">
-      {!isReady && !isLocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-800 dark:bg-slate-200">
-          <Loader2 className="h-8 w-8 animate-spin text-secondary" />
-        </div>
-      )}
+    <div className="flex justify-center items-center w-full h-auto bg-black rounded-lg overflow-hidden mb-4">
+      <CldVideoPlayer
+        id="sea-turtle" // Unique ID for the player
+
+        src= {publicId! || "samples/sea-turtle"} // Cloudinary publicId as the source
+
+    
+      />
+    
       {isLocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-800 dark:bg-slate-200 flex-col gap-y-2 text-secondary">
-          <Lock className="h-8 w-8" />
-          <p className="text-sm">This chapter is locked</p>
+        <div className="absolute flex items-center justify-center w-full h-full bg-black bg-opacity-75">
+          <Lock className="w-12 h-12 text-white" />
+          <span className="ml-2 text-white">Content Locked</span>
         </div>
-      )}
-      {!isLocked && playbackId && (
-        <MuxPlayer
-          streamType="on-demand"
-          playbackId={playbackId}
-          title={title}
-          onCanPlay={() => setIsReady(true)} // Set isReady to true when the video is ready to play
-          onEnded={onEnd}
-          className={cn(!isReady && "hidden")}
-          autoPlay
-        />
       )}
     </div>
   );

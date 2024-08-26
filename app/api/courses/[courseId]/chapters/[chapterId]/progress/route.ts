@@ -32,7 +32,7 @@ export async function PUT(
 
     return NextResponse.json(userProgress);
   } catch (error: any) {
-    ////console.log("[CHAPTER_PROGRESS]", error);
+
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

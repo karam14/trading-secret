@@ -26,7 +26,7 @@ export const CourseSidebar = async ({ course }: CourseSidebarProps) => {
     .select("id")
     .eq("user_id", userId)
     .eq("course_id", course.id)
-    .single();
+    .maybeSingle()
 
   if (purchaseError) {
     console.error("[CourseSidebar] Error fetching purchase:", purchaseError);
@@ -34,7 +34,6 @@ export const CourseSidebar = async ({ course }: CourseSidebarProps) => {
 
   // Fetch progress
   const progressCount: number = (await getProgress(userId, course.id)) ?? 0;
-
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
       <div className="p-8 flex flex-col border-b">

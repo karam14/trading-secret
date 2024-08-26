@@ -50,7 +50,7 @@ export const getChapter = async ({
       throw new Error("Chapter not found or is not published");
     }
 
-    let muxData = null;
+    let cloudinaryData = null;
     let attachments = [];
     let nextChapter = null;
 
@@ -68,18 +68,18 @@ export const getChapter = async ({
       }
     }
 
-    // Step 5: Fetch Mux data and next chapter if the chapter is free or purchased
+    // Step 5: Fetch Cloudinary data and next chapter if the chapter is free or purchased
     if (chapter.is_free || purchase) {
-      const { data: fetchedMuxData, error: muxDataError } = await supabase
-        .from('mux_data')
+      const { data: fetchedCloudinaryData, error: cloudinaryDataError } = await supabase
+        .from('cloudinary_data')
         .select('*')
         .eq('chapter_id', chapterId)
         .maybeSingle();  // Use maybeSingle() to handle no rows
 
-      if (muxDataError) {
-        console.error("[getChapter] Error fetching Mux data:", muxDataError);
+      if (cloudinaryDataError) {
+        console.error("[getChapter] Error fetching Cloudinary data:", cloudinaryDataError);
       } else {
-        muxData = fetchedMuxData;
+        cloudinaryData = fetchedCloudinaryData;
       }
 
       const { data: fetchedNextChapter, error: nextChapterError } = await supabase
@@ -113,7 +113,7 @@ export const getChapter = async ({
     return {
       chapter,
       course,
-      muxData,
+      cloudinaryData,
       attachments,
       nextChapter,
       userProgress,
@@ -125,7 +125,7 @@ export const getChapter = async ({
     return {
       chapter: null,
       course: null,
-      muxData: null,
+      cloudinaryData: null,
       attachments: null,
       nextChapter: null,
       userProgress: null,

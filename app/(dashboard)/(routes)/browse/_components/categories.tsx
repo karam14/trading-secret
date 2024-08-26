@@ -1,6 +1,14 @@
 "use client";
 
-import { FcEngineering, FcFilmReel, FcMultipleDevices, FcMusic, FcOldTimeCamera, FcSalesPerformance, FcSportsMode } from "react-icons/fc";
+import {
+  FcEngineering,
+  FcFilmReel,
+  FcMultipleDevices,
+  FcMusic,
+  FcOldTimeCamera,
+  FcSalesPerformance,
+  FcSportsMode,
+} from "react-icons/fc";
 import { IconType } from "react-icons";
 import { CategoryItem } from "./category-item";
 import { Category } from "@/types/types";
@@ -21,7 +29,7 @@ interface CategoriesProps {
 
 export const Categories = ({ items }: CategoriesProps) => {
   return (
-    <div className="flex items-center gap-x-2 overflow-x-auto pb-2">
+    <div className="flex items-center gap-x-2 overflow-x-auto pb-2 justify-end">
       {items.map((category) => (
         <CategoryItem
           key={category.id}

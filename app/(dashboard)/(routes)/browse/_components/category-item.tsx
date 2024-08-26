@@ -14,12 +14,15 @@ interface CategoryItemProps {
   label: string;
   value?: string;
   icon?: IconType;
+  className?: string;
 };
 
 export const CategoryItem = ({
   label,
   value,
   icon: Icon,
+  className,
+
 }: CategoryItemProps) => {
   const pathname = usePathname();
   const router = useRouter();

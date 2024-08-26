@@ -1,6 +1,14 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
+import cloudinary from 'cloudinary';
+
+// Configure Cloudinary with environment variables
+cloudinary.v2.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 export async function PATCH(req: Request, { params }: { params: { courseId: string } }) {
     try {
         // Initialize Supabase client
@@ -48,13 +56,9 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
-import Mux from "@mux/mux-node";
 
-// Initialize Mux client with new configuration
-const mux = new Mux({
-    tokenId: process.env.MUX_TOKEN_ID!,
-    tokenSecret: process.env.MUX_TOKEN_SECRET!,
-});
+
+
 export async function DELETE(req: Request, { params }: { params: { courseId: string } }) {
   try {
       // Initialize Supabase client
@@ -79,29 +83,30 @@ export async function DELETE(req: Request, { params }: { params: { courseId: str
           throw new Error(chaptersError.message);
       }
 
-      // Fetch and delete all Mux data associated with these chapters
+      // Fetch and delete all cloudinary data associated with these chapters
       for (const chapter of chapters) {
-          const { data: muxDataList, error: muxDataError } = await supabase
-              .from('mux_data')
-              .select('id, asset_id')
+          const { data: cloudinaryDataList, error: cloudinaryDataError } = await supabase
+              .from('cloudinary_data')
+              .select('id, public_id')
               .eq('chapter_id', chapter.id);
 
-          if (muxDataError) {
-              throw new Error(muxDataError.message);
+          if (cloudinaryDataError) {
+              throw new Error(cloudinaryDataError.message);
           }
 
-          // Delete associated Mux assets and corresponding mux_data records
-          for (const muxData of muxDataList) {
+          // Delete associated cloudinary assets and corresponding cloudinary_data records
+          for (const cloudinaryData of cloudinaryDataList) {
               try {
-                  await mux.video.assets.delete(muxData.asset_id);
+                    await cloudinary.v2.uploader.destroy(cloudinaryData.public_id,{resource_type: 'video'});
 
-                  // Delete Mux data from the database
+
+                  // Delete cloudinary data from the database
                   await supabase
-                      .from('mux_data')
+                      .from('cloudinary_data')
                       .delete()
-                      .eq('id', muxData.id);
+                      .eq('id', cloudinaryData.id);
               } catch (error) {
-                  ////console.log("[Mux Asset Delete]", error);
+                  ////console.log("[Cloudinary Asset Delete]", error);
               }
           }
       }

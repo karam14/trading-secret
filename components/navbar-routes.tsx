@@ -18,13 +18,14 @@ interface NavbarRoutesProps {
 export const NavbarRoutes: React.FC<NavbarRoutesProps> = ({
   currentProfile
 }) => {
+    console.log("[NavbarRoutes] " + currentProfile?.name);
   const [user, setUser] = useState<any>(null);
   const pathname = usePathname();
   const router = useRouter();
 
   const isCoachPage = pathname?.startsWith("/teacher");
   const isPlayerPage = pathname?.includes("/chapters");
-  const isSearchPage = pathname === "/search";
+  const isSearchPage = pathname === "/browse";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,7 +48,13 @@ export const NavbarRoutes: React.FC<NavbarRoutesProps> = ({
       console.error("[NavbarRoutes] Error signing out:", error);
     } else {
       setUser(null);
+      if (pathname === "/") {
+        router.refresh();
+      }
+      else{
       router.push("/"); 
+      }
+
     }
   };
 
@@ -85,7 +92,7 @@ export const NavbarRoutes: React.FC<NavbarRoutesProps> = ({
         {user ? (
           <>
             <div className="text-sm font-medium">
-              Welcome, {user.email}! Role: {currentProfile?.role }
+              Welcome, {currentProfile!.name}!
             </div>
             <Button size="sm" variant="ghost" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" />

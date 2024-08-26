@@ -26,7 +26,6 @@ const ChapterIdPage = async ({
   }
 
   const userId = user.id;
-  //console.log("[ChapterIdPage] Authenticated user ID:", userId);
 
   // Fetch chapter, course, and related data
   const chapterData = await getChapter({
@@ -35,22 +34,15 @@ const ChapterIdPage = async ({
     courseId: params.courseId,
   });
 
-  // Log the full chapter data object to inspect the returned data
-  //console.log("[ChapterIdPage] getChapter response:", chapterData);
+  const { chapter, course, cloudinaryData, attachments, nextChapter, userProgress, purchase } = chapterData;
 
-  const { chapter, course, muxData, attachments, nextChapter, userProgress, purchase } = chapterData;
-
-  // Temporarily comment out the redirect logic to inspect the data without redirection
-  // if (!chapter || !course) {
-  //   console.error("[ChapterIdPage] No chapter or course data found, redirecting...");
-  //   return redirect("/");
-  // }
+  if (!chapter || !course) {
+    console.error("[ChapterIdPage] No chapter or course data found, redirecting...");
+    return redirect("/");
+  }
 
   const isLocked = !chapter?.is_free && !purchase;
   const completeOnEnd = !!purchase && !userProgress?.is_completed;
-
-  //console.log("[ChapterIdPage] isLocked:", isLocked);
-  //console.log("[ChapterIdPage] completeOnEnd:", completeOnEnd);
 
   return (
     <div>
@@ -73,7 +65,7 @@ const ChapterIdPage = async ({
             title={chapter?.title || "Untitled Chapter"}
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
-            playbackId={muxData?.playback_id || ""}
+            publicId={ cloudinaryData?.public_id }
             isLocked={isLocked}
             completeOnEnd={completeOnEnd}
           />

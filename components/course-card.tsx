@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-
 import { IconBadge } from "@/components/icon-badge";
-import { formatPrice } from "@/lib/format";
 import { CourseProgress } from "@/components/course-progress";
 
 interface CourseCardProps {
@@ -13,7 +11,7 @@ interface CourseCardProps {
   chaptersLength: number;
   progress: number | null;
   category: string;
-};
+}
 
 export const CourseCard = ({
   id,
@@ -21,11 +19,11 @@ export const CourseCard = ({
   imageUrl,
   chaptersLength,
   progress,
-  category
+  category,
 }: CourseCardProps) => {
   return (
     <Link href={`/courses/${id}`}>
-      <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
+      <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full text-right">
         <div className="relative w-full aspect-video rounded-md overflow-hidden">
           <Image
             fill
@@ -35,17 +33,17 @@ export const CourseCard = ({
           />
         </div>
         <div className="flex flex-col pt-2">
-          <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition  dark:group-hover:text-sky-500  line-clamp-2">
+          <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition dark:group-hover:text-sky-500 line-clamp-2">
             {title}
           </div>
           <p className="text-xs text-muted-foreground">
             {category}
           </p>
-          <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
+          <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs justify-end">
             <div className="flex items-center gap-x-1 text-slate-500">
               <IconBadge size="sm" icon={BookOpen} />
               <span>
-                {chaptersLength} {chaptersLength === 1 ? "Chapter" : "Chapters"}
+                {chaptersLength} {chaptersLength === 1 ? "حلقة" : "حلقات"}
               </span>
             </div>
           </div>
@@ -56,10 +54,10 @@ export const CourseCard = ({
               value={progress}
             />
           ) : (
-            <p className="text-sm text-muted-foreground">Not started</p>
+            <p className="text-sm text-muted-foreground">لم تبدأ</p>
           )}
         </div>
       </div>
     </Link>
-  )
-}
+  );
+};

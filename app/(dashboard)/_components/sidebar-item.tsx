@@ -10,6 +10,7 @@ interface SidebarItemProps {
     icon: LucideIcon;
     label: string;
     href: string;
+    disabled?: boolean;
 };
 
 export const SidebarItem = ({ icon: Icon, label, href } : SidebarItemProps) => {
@@ -26,7 +27,7 @@ export const SidebarItem = ({ icon: Icon, label, href } : SidebarItemProps) => {
     return (
         <Button onClick={onClick} type="button" variant={"ghost"} className={cn(
             "p-0",
-            "flex items-center gap-x-02 text-slate-500 text-sm font-[500] pl-6 transition-all hover:text-slate-600 hover:bg-slate-300/20" , isActive && "text-sky-700 bg-sky-200/20 hover:bg-sky-200/20"
+            "flex w-full items-center gap-x-02 text-slate-500 text-sm font-[500] pl-6 transition-all hover:text-slate-600 hover:bg-slate-300/20" , isActive && "text-sky-700 bg-sky-200/20 hover:bg-sky-200/20"
         )}>
             <div className="flex items-center gap-x-2 py-4">
             <Icon size={22} className={cn("text-slate-500", isActive && "text-sky-700")} />

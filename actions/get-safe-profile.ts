@@ -26,7 +26,6 @@ export default async function getSafeProfile() {
     .select('name, image_url, created_at, updated_at')
     .eq('id', userId)
     .single();
-
   // If no profile exists, insert a new one
   if (profileError && profileError.code === 'PGRST116') { // PGRST116 corresponds to "No data found"
     const { error: insertError } = await supabase
@@ -59,11 +58,12 @@ export default async function getSafeProfile() {
     id: userId,
     email,  // Use the non-undefined email here
     role: roleClaim,
-    name: profile?.name || email,  // Use email as fallback for name
+    name: profile?.name ,  // Use email as fallback for name
     image_url: profile?.image_url || null,
     created_at: profile?.created_at ? new Date(profile.created_at).toISOString() : null,
     updated_at: profile?.updated_at ? new Date(profile.updated_at).toISOString() : null,
   };
+  console.log("[getSafeProfile] Safe profile:", safeProfile);
 
   return safeProfile;
 }

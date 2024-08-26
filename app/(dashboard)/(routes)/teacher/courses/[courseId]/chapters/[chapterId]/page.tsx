@@ -31,10 +31,9 @@ const ChapterIdPage: React.FC<ChapterIdPageProps> = async ({ params }) => {
   .from("chapters")
   .select(`
     *,
-    mux_data (
+    cloudinary_data (
       id,
-      asset_id,
-      playback_id
+      public_id
     )
   `)
   .eq("id", params.chapterId)
@@ -42,12 +41,12 @@ const ChapterIdPage: React.FC<ChapterIdPageProps> = async ({ params }) => {
   .single();
 
   if (chapterError || !chapter) {
-    //console.log("[CHAPTER_ID]", chapterError);
-    return redirect("/");
+    console.log("[CHAPTER_ID]", chapterError);
+    // return redirect("/");
   }
 
   const requiredFields = [
-    chapter.title,
+    chapter.title!,
     chapter.description,
     chapter.video_url,
   ];

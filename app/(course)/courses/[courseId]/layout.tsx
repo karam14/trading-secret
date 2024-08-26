@@ -49,6 +49,7 @@ const CourseLayout = async ({
         title,
         position,
         is_published,
+        is_free,
         userProgress:user_progress(
           id,
           user_id,

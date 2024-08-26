@@ -42,7 +42,6 @@ export const getProgress = async (
     // Calculate progress percentage
     const progressPercentage =
       validCompletedChapters !== null ? (validCompletedChapters / publishedChapters.length) * 100 : 0;
-    console.log("[GET_PROGRESS] Progress percentage:", progressPercentage);
     return progressPercentage;
   } catch (error) {
     console.error("[GET_PROGRESS] Unexpected error:", error);

@@ -12,14 +12,13 @@ export interface Chapter {
   course_id: string;
   created_at: string;
   updated_at: string;
-  mux_data?: MuxData | null;
+  cloudinary_data?: cloudinaryData | null;
 }
 
-export interface MuxData {
+export interface cloudinaryData {
   id: string;
   chapter_id: string;
-  asset_id: string;
-  playback_id: string;
+  public_id: string;
   created_at: string;
 }
 
@@ -34,6 +33,9 @@ export interface Course {
   chapters: Chapter[];
   categoryId: string;
 }
+
+
+
 
 export interface Category {
   id: string;
@@ -58,7 +60,9 @@ export type CourseWithProgressWithCategory = Course & {
   chapters: { id: string }[];  // A list of chapter IDs associated with the course
   progress: number | null;  // The user's progress in the course
 };
+
 export interface SafeProfile {
+  
   id: string;                  // The user's ID from the session
   email: string;               // The user's email from the session
   role: string | null;         // The role extracted from the JWT token

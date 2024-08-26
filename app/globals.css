@@ -69,3 +69,7 @@
 }
 
 @import "@uploadthing/react/styles.css";
+
+.rtl-grid {
+  direction: rtl;
+}
