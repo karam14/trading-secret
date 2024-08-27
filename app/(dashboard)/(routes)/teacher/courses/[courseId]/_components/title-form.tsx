@@ -55,57 +55,57 @@ export const TitleForm = ({
         }
     };
     return (
-        <div className="mt-6 border bg-slate-100 rounded-md  p-6">
-            <div className="font-medium flex items-center justify-between">
-                Course Title
-                <Button variant="ghost" onClick={toggleEdit}>
-                    {isEditing && (<>Cancel</>)}
-                    {!isEditing && (
-                        <>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit Title
-                        </>
-                    )}
-                </Button>
-            </div>
-            {!isEditing && (
-                <p>{initialData.title}</p>
+<div className="mt-6 border bg-slate-100 dark:bg-slate-700 rounded-md p-6">
+  <div className="font-medium flex items-center justify-between text-gray-900 dark:text-gray-100">
+    Course Title
+    <Button variant="ghost" onClick={toggleEdit}>
+      {isEditing && (<>Cancel</>)}
+      {!isEditing && (
+        <>
+          <Pencil className="h-4 w-4 mr-2" />
+          Edit Title
+        </>
+      )}
+    </Button>
+  </div>
+  {!isEditing && (
+    <p className="text-gray-900 dark:text-gray-100">{initialData.title}</p>
+  )}
+  {isEditing && (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="title">Course Title</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={isSubmitting}
+                  placeholder="e.g Trading 101"
+                  {...field}
+                  className="text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-600"
+                />
+              </FormControl>
+              <FormDescription>
+                Enter the name of your course
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          disabled={!isValid || isSubmitting}
+          className="bg-sky-700 dark:bg-sky-600 rounded-md px-4 py-2 text-foreground"
+        >
+          Save
+        </Button>
+      </form>
+    </Form>
+  )}
+</div>
 
-            )}
-            {isEditing && (
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor="title">Course Title</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            disabled={isSubmitting}
-                                            placeholder="e.g Trading 101"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Enter the name of your course
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button
-                            type="submit"
-                            disabled={!isValid || isSubmitting}
-                            className="bg-sky-700 rounded-md px-4 py-2 text-foreground"
-
-                        >
-                            Save
-                        </Button>
-                    </form>
-                </Form>
-            )}
-        </div>
     )
 }

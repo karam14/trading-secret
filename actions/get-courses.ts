@@ -29,6 +29,8 @@ export const getCourses = async ({
         title,
         description,
         categoryId,
+        price,
+        badge,
         imageUrl,
         created_at,
         updated_at,

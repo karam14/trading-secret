@@ -7,10 +7,10 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
-
+import { createClient } from "@/utils/supabase/client";
 import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-
+const supabase = createClient();
 interface VideoPlayerProps {
   publicId?: string | null; // Cloudinary publicId replaces Mux playbackId
   courseId: string;
@@ -35,6 +35,8 @@ export const VideoPlayer = ({
   const confetti = useConfettiStore();
 
   const onEnd = async () => {
+    const userId = await supabase.auth.getUser()?.then(user => user.data.user?.id);
+
     try {
       if (completeOnEnd) {
         // Update the progress when the video ends
@@ -44,8 +46,15 @@ export const VideoPlayer = ({
 
         // Show confetti if it's the last chapter
         if (!nextChapterId) {
+          toast.success("Congratulations! You completed the course.");
           confetti.onOpen();
+          router.refresh();
         }
+        await supabase.from("user_course_progress").upsert({
+          user_id: userId,
+          course_id: courseId,
+          completed: true,
+        });
 
         toast.success("Progress updated");
         router.refresh();
@@ -53,6 +62,7 @@ export const VideoPlayer = ({
         // Navigate to the next chapter if it exists
         if (nextChapterId) {
           router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+          router.refresh();
         }
       }
     } catch (error) {
@@ -65,8 +75,8 @@ export const VideoPlayer = ({
     <div className="flex justify-center items-center w-full h-auto bg-black rounded-lg overflow-hidden mb-4">
       <CldVideoPlayer
         id="sea-turtle" // Unique ID for the player
-
-        src= {publicId! || "samples/sea-turtle"} // Cloudinary publicId as the source
+        src= {publicId! || "samples/sea-turtle"}
+        onEnded={onEnd} // Cloudinary publicId as the source
 
     
       />

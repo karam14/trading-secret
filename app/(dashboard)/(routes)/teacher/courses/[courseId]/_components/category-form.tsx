@@ -63,57 +63,62 @@ export const CategoryForm = ({
     const selectedOption = options.find((option) => option.value === initialData.categoryId);
 
     return (
-        <div className="mt-6 border bg-slate-100 rounded-md p-6">
-            <div className="font-medium flex items-center justify-between">
-                Course Category
-                <Button variant="ghost" onClick={toggleEdit}>
-                    {isEditing && (<>Cancel</>)}
-                    {!isEditing && (
-                        <>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit Category
-                        </>
-                    )}
-                </Button>
-            </div>
-            {!isEditing && (
-                <p className={cn(
-                    "", !initialData.categoryId && "text-slate-500 italic"
-                )}>{selectedOption?.label || "No Category"}</p>
-            )}
-            {isEditing && (
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
-                        <FormField
-                            control={form.control}
-                            name="categoryId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor="categoryId">Course Category</FormLabel>
-                                    <FormControl>
-                                        <ComboBox
-                                            options={options}
-                                            value={field.value}
-                                            onChange={(value) => field.onChange(value)} // Provide the onChange handler
-                                        />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Select the category for your course
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+        <div className="mt-6 border bg-slate-100 dark:bg-slate-700 rounded-md p-6">
+          <div className="font-medium flex items-center justify-between text-gray-900 dark:text-gray-100">
+            Course Category
+            <Button variant="ghost" onClick={toggleEdit}>
+              {isEditing && (<>Cancel</>)}
+              {!isEditing && (
+                <>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit Category
+                </>
+              )}
+            </Button>
+          </div>
+          {!isEditing && (
+            <p className={cn(
+              "text-gray-900 dark:text-gray-100",
+              !initialData.categoryId && "text-slate-500 dark:text-slate-400 italic"
+            )}>
+              {selectedOption?.label || "No Category"}
+            </p>
+          )}
+          {isEditing && (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="categoryId" className="text-gray-900 dark:text-gray-100">Course Category</FormLabel>
+                      <FormControl>
+                        <ComboBox
+                          options={options}
+                          value={field.value}
+                          onChange={(value) => field.onChange(value)}
+                          className="bg-white dark:bg-slate-600 text-gray-900 dark:text-gray-100"
                         />
-                        <Button
-                            type="submit"
-                            disabled={!isValid || isSubmitting}
-                            className="bg-sky-700 rounded-md px-4 py-2 text-foreground"
-                        >
-                            Save
-                        </Button>
-                    </form>
-                </Form>
-            )}
+                      </FormControl>
+                      <FormDescription className="text-gray-500 dark:text-gray-400">
+                        Select the category for your course
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  disabled={!isValid || isSubmitting}
+                  className="bg-sky-700 dark:bg-sky-600 rounded-md px-4 py-2 text-foreground"
+                >
+                  Save
+                </Button>
+              </form>
+            </Form>
+          )}
         </div>
-    )
+      );
+      
 }

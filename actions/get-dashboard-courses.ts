@@ -23,6 +23,7 @@ export const getDashboardCourses = async (userId: string): Promise<DashboardCour
                     created_at,
                     updated_at,
                     imageUrl,
+                    badge,
                     category: categories (
                         id,
                         name

@@ -22,12 +22,14 @@ interface ComboBoxProps {
   options: { label: string; value: string }[];
   value?: string;
   onChange: (value: string) => void;
+  className?: string;
 }
 
 export const ComboBox = ({
   options,
   value,
   onChange,
+  className,
 }: ComboBoxProps) => {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");

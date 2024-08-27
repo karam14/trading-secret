@@ -6,8 +6,7 @@ import { InfoCard } from "./_components/info-card";
 import { CheckCircle, Clock, Info, Lock } from "lucide-react";
 import { CoursesList } from "@/components/courses-list";
 import { createClient } from "@/utils/supabase/server";
-import LoginButton from "./_components/login-button";  // Import the client component
-import { Button } from "@/components/ui/button";
+import LoginButton from "./_components/login-button";
 
 export default async function Dashboard() {
   const supabase = createClient();
@@ -24,7 +23,7 @@ export default async function Dashboard() {
           />
         </div>
         <div className="flex justify-center">
-          <LoginButton />  {/* Use the client component here */}
+          <LoginButton />
         </div>
       </div>
     );
@@ -65,17 +64,19 @@ export default async function Dashboard() {
         <CoursesList items={[...coursesInProgress, ...completedCourses]} />
       </div>
 
+      {/* Earned Badges Section */}
+      <div className="space-y-4">
+      </div>
+
       {/* VIP Signals Section */}
       <div className="space-y-6">
-  <h2 className="text-3xl font-bold text-center">👑 إشارات VIP 👑</h2>
-  <div className="relative p-8 bg-gray-800 dark:bg-gray-900 rounded-xl shadow-lg flex flex-col items-center justify-center text-gray-300">
-    <div className="absolute inset-0 bg-black/50 backdrop-blur-lg rounded-xl"></div>
-    <Lock className="w-16 h-16 text-gray-400 z-10" />
-    <p className="text-xl font-semibold mt-4 z-10">قريباً</p>
-
-  </div>
-</div>
-
+        <h2 className="text-3xl font-bold text-center">👑 إشارات VIP 👑</h2>
+        <div className="relative p-8 bg-gray-800 dark:bg-gray-900 rounded-xl shadow-lg flex flex-col items-center justify-center text-gray-300">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-lg rounded-xl"></div>
+          <Lock className="w-16 h-16 text-gray-400 z-10" />
+          <p className="text-xl font-semibold mt-4 z-10">قريباً</p>
+        </div>
+      </div>
     </div>
   );
 }

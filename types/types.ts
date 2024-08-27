@@ -28,6 +28,8 @@ export interface Course {
   imageUrl: string;
   description: string;
   is_published: boolean;
+  price: number;
+  badge: string;
   created_at: string;
   updated_at: string;
   chapters: Chapter[];
