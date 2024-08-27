@@ -1,13 +1,15 @@
+
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import { createClient } from "@/utils/supabase/server";
 import Error from "next/error";
 import { NextResponse } from "next/server";
+import getUser from "@/actions/get-user";
 const f = createUploadthing();
 
 const auth = async () => {
     const supabase = createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {  user , error: userError } = await getUser();
     if (userError || !user) {
         throw new NextResponse("Unauthorized", { status: 401 });
     }

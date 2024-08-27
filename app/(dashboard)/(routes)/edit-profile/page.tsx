@@ -39,9 +39,9 @@ export default function EditProfile() {
 
     loadProfileData();
   }, []);
+  const supabase = createClient();
 
   const handleFileUpload = async (event: any) => {
-    const supabase = createClient();
 
     const file = event.target.files[0];
     if (file) {
@@ -123,8 +123,9 @@ export default function EditProfile() {
     }
 
     setLoading(true);
-    const user = await supabase.auth.getUser();
-    const success = await updatePassword(user?.data.user?.id, currentPassword, newPassword);
+    const {user, error} = await getUser();
+    const userId = user?.id as string;
+    const success = await updatePassword(userId, currentPassword, newPassword);
     setLoading(false);
 
     if (success) {

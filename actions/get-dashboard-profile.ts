@@ -1,9 +1,10 @@
 // src/app/actions/dashboardProfileActions.ts
 import { createClient } from "@/utils/supabase/server"; // Server-side Supabase client
 
-const supabase = createClient();
 
 export async function fetchProfile(userId: string) {
+  const supabase = createClient();
+
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("name, image_url")
@@ -16,6 +17,8 @@ export async function fetchProfile(userId: string) {
 }
 
 export async function fetchBadges(userId: string) {
+  const supabase = createClient();
+
   const { data: completedCourses, error: completedCoursesError } = await supabase
     .from("user_course_progress")
     .select("course_id")
@@ -24,7 +27,7 @@ export async function fetchBadges(userId: string) {
   if (completedCoursesError) throw completedCoursesError;
 
   const badgesData = await Promise.all(
-    completedCourses.map(async (progress) => {
+    completedCourses.map(async (progress: { course_id: any; }) => {
       const { data: course, error: courseError } = await supabase
         .from("courses")
         .select("badge, title")

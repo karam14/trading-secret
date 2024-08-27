@@ -1,3 +1,6 @@
+"use server";
+
+
 import getUser from "@/actions/get-user";
 import { createClient } from "@/utils/supabase/server";
 import { jwtDecode } from "jwt-decode";
