@@ -6,7 +6,8 @@ import { ToastProvider } from "@/components/providers/toaster-provider";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 const DynamicThemeProvider = dynamic(() => import("next-themes").then(mod => mod.ThemeProvider), { ssr: false });
 
 const defaultUrl = process.env.VERCEL_URL
@@ -26,6 +27,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className}>
+      <SpeedInsights />
+      <Analytics />
       <body>
         <DynamicThemeProvider attribute="class" defaultTheme="dark">
           <main>

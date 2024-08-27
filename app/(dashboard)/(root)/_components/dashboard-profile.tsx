@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"; // Import Tooltip components
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"; // Import Popover components
+import Image from "next/image";
 
 const supabase = createClient();
 
@@ -82,13 +83,15 @@ export default function DashboardProfile({ userId }: DashboardProfileProps) {
   }
 
   return (
-    <div className="border rounded-md flex flex-row-reverse items-center gap-4 p-4 md:p-6  shadow dark:shadow-md dark:shadow-black  rounded-md text-right">
+    <div className="border  flex flex-row-reverse items-center gap-4 p-4 md:p-6  shadow dark:shadow-md dark:shadow-black  rounded-md text-right">
       <div className="relative w-40 h-40 md:w-40 md:h-40 rounded-full overflow-hidden group">
         {profile?.image_url ? (
-          <img
+          <Image
             src={profile.image_url}
             alt={`الصورة الشخصية لـ ${profile.name}`}
             className="object-cover w-full h-full"
+            width="1000"
+            height="1000"
           />
         ) : (
           <div className="flex items-center justify-center w-full h-full ">
