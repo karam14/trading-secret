@@ -1,39 +1,16 @@
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { CourseProgress } from "@/components/course-progress";
+import { fetchCourseSidebarData } from "./sidebar-action";
 import { CourseSidebarItem } from "./course-sidebar-item";
 import { CourseWithProgressWithCategory } from "@/types/types";
-import { getProgress } from "@/actions/get-progress"; // Server-side function to get progress
+import { CourseProgress } from "@/components/course-progress";
 
 interface CourseSidebarProps {
   course: CourseWithProgressWithCategory;
-  progressCount: number;
 }
 
 export const CourseSidebar = async ({ course }: CourseSidebarProps) => {
-  const supabase = createClient();
-  const { data: session } = await supabase.auth.getSession();
+  // Fetch the necessary data using the server action
+  const { purchase, progressCount } = await fetchCourseSidebarData(course.id);
 
-  if (!session || !session.session?.user) {
-    return redirect("/");
-  }
-
-  const userId = session.session?.user.id;
-
-  // Check if the user has purchased the course
-  const { data: purchase, error: purchaseError } = await supabase
-    .from("purchases")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("course_id", course.id)
-    .maybeSingle()
-
-  if (purchaseError) {
-    console.error("[CourseSidebar] Error fetching purchase:", purchaseError);
-  }
-
-  // Fetch progress
-  const progressCount: number = (await getProgress(userId, course.id)) ?? 0;
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
       <div className="p-8 flex flex-col border-b">

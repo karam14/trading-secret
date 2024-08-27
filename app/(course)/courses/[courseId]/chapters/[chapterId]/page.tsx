@@ -1,4 +1,3 @@
-import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { File } from "lucide-react";
 
@@ -10,18 +9,18 @@ import { Preview } from "@/components/preview";
 import { VideoPlayer } from "./_components/video-player";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
 import { CourseProgressButton } from "./_components/course-progress-button";
+import getUser from "@/actions/get-user";
 
 const ChapterIdPage = async ({
   params
 }: {
   params: { courseId: string; chapterId: string }
 }) => {
-  const supabase = createClient();
   
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    console.error("[ChapterIdPage] User not authenticated or error occurred:", userError);
+  const {user, error} = await getUser();
+  
+  if (error || !user) {
+    console.error("[ChapterIdPage] User not authenticated or error occurred:", error);
     return redirect("/");
   }
 

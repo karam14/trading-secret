@@ -6,13 +6,11 @@ import { BannerCard } from "./_components/banner-card";
 import { InfoCard } from "./_components/info-card";
 import { CheckCircle, Clock, Info, Lock } from "lucide-react";
 import { CoursesList } from "@/components/courses-list";
-import { createClient } from "@/utils/supabase/server";
 import LoginButton from "./_components/login-button";
+import getUser from "@/actions/get-user";
 
 export default async function Dashboard() {
-  const supabase = createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
-
+  const {user, error} = await getUser();
   if (error || !user) {
     return (
       <div className="p-6 space-y-8 text-right">

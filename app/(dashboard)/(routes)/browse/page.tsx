@@ -1,8 +1,10 @@
-import { createClient } from "@/utils/supabase/server"; // Adjust the path to your Supabase client utility
+// src/app/[searchParams]/page.tsx
+import { fetchCategories } from "@/actions/fetch-categories";
+import { getCourses } from "@/actions/get-courses";
+import getUser from "@/actions/get-user";
 import { redirect } from "next/navigation";
 
 import { SearchInput } from "@/components/search-input";
-import { getCourses } from "@/actions/get-courses";
 import { CoursesList } from "@/components/courses-list";
 import { Categories } from "./_components/categories";
 
@@ -11,22 +13,22 @@ interface SearchPageProps {
     title: string;
     categoryId: string;
   }
-};
+}
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
-  const supabase = createClient();
-  const { data: session } = await supabase.auth.getUser();
+  const { user, error } = await getUser();
 
+  if (error) {
+    console.error("Error fetching user:", error.message);
+    return redirect("/");
+  }
 
-  const userId = session.user?.id ?? '';
+  const userId = user?.id as string;
 
-  const { data: categories, error: categoriesError } = await supabase
-    .from('categories')
-    .select('id, name')
-    .order('name', { ascending: true });
+  // Fetch categories using the server action
+  const categories = await fetchCategories();
 
-  if (categoriesError) {
-    console.error("Error fetching categories:", categoriesError.message);
+  if (!categories) {
     return redirect("/");
   }
 
@@ -41,7 +43,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
         <SearchInput />
       </div>
       <div className="p-6 space-y-4">
-        <Categories items={categories || []} />
+        <Categories items={categories} />
         <CoursesList items={courses} />
       </div>
     </>

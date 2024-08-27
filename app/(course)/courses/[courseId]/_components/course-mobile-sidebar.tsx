@@ -15,7 +15,6 @@ interface CourseMobileSidebarProps {
 
 export const CourseMobileSidebar = ({ 
   course,
-  progressCount,
 }: CourseMobileSidebarProps) => {
   return (
     <Sheet>
@@ -25,7 +24,6 @@ export const CourseMobileSidebar = ({
       <SheetContent side="left" className="p-0 w-72">
         <CourseSidebar
           course={course}
-          progressCount={progressCount}
         />
       </SheetContent>
     </Sheet>

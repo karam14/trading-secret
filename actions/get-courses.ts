@@ -16,12 +16,7 @@ export const getCourses = async ({
   const supabase = createClient();
 
   try {
-    //console.log("[GET_COURSES] Starting fetch process...");
-    //console.log("[GET_COURSES] userId:", userId);
-    //console.log("[GET_COURSES] title:", title);
-    //console.log("[GET_COURSES] categoryId:", categoryId);
-
-    // Step 1: Fetch Courses
+    // Step 1: Fetch Courses with the related category and chapters in a single query
     let courseQuery = supabase
       .from('courses')
       .select(`
@@ -34,18 +29,18 @@ export const getCourses = async ({
         imageUrl,
         created_at,
         updated_at,
-        is_published
+        is_published,
+        category:categories(id, name, created_at, updated_at),
+        chapters(id, title, description, is_free, is_published, video_url, course_id, created_at, updated_at)
       `)
       .eq('is_published', true)
       .order('created_at', { ascending: false });
 
     if (title) {
-      //console.log("[GET_COURSES] Applying title filter:", title);
       courseQuery = courseQuery.ilike('title', `%${title}%`);
     }
 
     if (categoryId) {
-      //console.log("[GET_COURSES] Applying category filter:", categoryId);
       courseQuery = courseQuery.eq('categoryId', categoryId);
     }
 
@@ -56,40 +51,15 @@ export const getCourses = async ({
       return [];
     }
 
-    //console.log("[GET_COURSES] Fetched courses:", courses);
-
-    // Step 2: Fetch related categories
-    const categoryIds = courses.map(course => course.categoryId);
-    const { data: categories, error: categoryError } = await supabase
-      .from('categories')
-      .select('id, name, created_at, updated_at')
-      .in('id', categoryIds);
-
-    if (categoryError) {
-      console.error("[GET_COURSES] Error fetching categories:", categoryError);
+    if (!courses || courses.length === 0) {
       return [];
     }
 
-    //console.log("[GET_COURSES] Fetched categories:", categories);
-
-    // Step 3: Fetch related chapters for each course
+    // Step 2: Fetch related purchases for the user in a single query
     const courseIds = courses.map(course => course.id);
-    const { data: chapters, error: chaptersError } = await supabase
-      .from('chapters')
-      .select('id, title, description, is_free, is_published, video_url, course_id, created_at, updated_at')
-      .in('course_id', courseIds);
-
-    if (chaptersError) {
-      console.error("[GET_COURSES] Error fetching chapters:", chaptersError);
-      return [];
-    }
-
-    //console.log("[GET_COURSES] Fetched chapters:", chapters);
-
-    // Step 4: Fetch related purchases for the user
     const { data: purchases, error: purchasesError } = await supabase
       .from('purchases')
-      .select('user_id, course_id')
+      .select('course_id')
       .eq('user_id', userId)
       .in('course_id', courseIds);
 
@@ -98,45 +68,25 @@ export const getCourses = async ({
       return [];
     }
 
-    //console.log("[GET_COURSES] Fetched purchases:", purchases);
-
-    // Step 5: Map the fetched data to build the final result
+    // Step 3: Build the final result by mapping courses with progress and other details
     const coursesWithProgress: CourseWithProgressWithCategory[] = await Promise.all(
       courses.map(async (course) => {
-        //console.log("[GET_COURSES] Processing course:", course.id);
-
-        // Find the related category
-        const category = categories.find(cat => cat.id === course.categoryId) || null;
-
-        // Find the related chapters
-        const relatedChapters = chapters.filter(chapter => chapter.course_id === course.id);
-
-        // Check if the user has purchased this course
         const userHasPurchased = purchases.some(purchase => purchase.course_id === course.id);
 
-        //console.log("[GET_COURSES] User has purchased:", userHasPurchased);
-
-        // Calculate progress if the user has purchased the course
         const progressPercentage = userHasPurchased
           ? await getProgress(userId, course.id)
           : null;
 
-        //console.log("[GET_COURSES] Course progress:", progressPercentage);
-
         const courseWithProgress: CourseWithProgressWithCategory = {
           ...course,
           progress: progressPercentage,
-          category: category as Category,
-          chapters: relatedChapters as Chapter[], // Ensure chapters have the correct type
+          category: course.category as unknown as Category, // category should now correctly be a single Category object
+          chapters: course.chapters as Chapter[], // Ensure chapters have the correct type
         };
-
-        //console.log("[GET_COURSES] Processed course with progress:", courseWithProgress);
 
         return courseWithProgress;
       })
     );
-
-    //console.log("[GET_COURSES] Completed processing all courses.");
 
     return coursesWithProgress;
   } catch (error) {

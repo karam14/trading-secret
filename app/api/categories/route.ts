@@ -1,3 +1,4 @@
+import getUser from "@/actions/get-user";
 import { createClient } from "@/utils/supabase/server";
 import { jwtDecode } from "jwt-decode";
 import { NextResponse } from "next/server";
@@ -5,13 +6,8 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     try {
         const supabase = createClient();
-
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        const { data, error } = await supabase.auth.getSession();
-        const token = data.session!.access_token;
-        const decodedToken = jwtDecode(token);
-        ////console.log("Session data:", decodedToken);
-        if (userError || !user) {
+        const { user, error} = await getUser();
+        if (error || !user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
