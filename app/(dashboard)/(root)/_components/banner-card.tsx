@@ -15,7 +15,7 @@ export const BannerCard = ({
   label,
 }: BannerCardProps) => {
   return (
-    <div className="border rounded-md flex items-center gap-x-2 p-3 flex-row-reverse text-right">
+    <div className="border dark:shadow-md dark:shadow-black rounded-md flex items-center gap-x-2 p-3 flex-row-reverse text-right">
       <IconBadge
         variant={variant}
         icon={Icon}

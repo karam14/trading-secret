@@ -7,7 +7,7 @@ interface CoursesListProps {
 
 export const CoursesList = ({ items }: CoursesListProps) => {
   return (
-    <div className="text-right">
+    <div className="text-right ">
 <div className="rtl-grid grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 text-right  direction: rtl">
 {items.map((item) => (
           <CourseCard

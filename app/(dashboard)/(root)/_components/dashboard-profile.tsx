@@ -82,7 +82,7 @@ export default function DashboardProfile({ userId }: DashboardProfileProps) {
   }
 
   return (
-    <div className="flex flex-row-reverse items-center gap-4 p-4 md:p-6 bg-white dark:bg-gray-800 shadow rounded-md text-right">
+    <div className="border rounded-md flex flex-row-reverse items-center gap-4 p-4 md:p-6  shadow dark:shadow-md dark:shadow-black  rounded-md text-right">
       <div className="relative w-40 h-40 md:w-40 md:h-40 rounded-full overflow-hidden group">
         {profile?.image_url ? (
           <img
@@ -91,7 +91,7 @@ export default function DashboardProfile({ userId }: DashboardProfileProps) {
             className="object-cover w-full h-full"
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700">
+          <div className="flex items-center justify-center w-full h-full ">
             <User className="w-40 h-40 text-gray-400 dark:text-gray-500" />
           </div>
         )}
