@@ -2,7 +2,6 @@
 import { NavbarRoutes } from "@/components/navbar-routes";
 import { MobileSidebar } from "./mobile-sidebar";
 import getSafeProfile from "@/actions/get-safe-profile";
-import { DarkModeToggle } from "./DarkModeToggle";
 
 export const Navbar = async () => {
     // Fetch the user's profile

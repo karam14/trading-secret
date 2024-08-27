@@ -1,3 +1,4 @@
+
 import { getDashboardCourses } from "@/actions/get-dashboard-courses";
 import DashboardProfile from "./_components/dashboard-profile";
 import { redirect } from "next/navigation";

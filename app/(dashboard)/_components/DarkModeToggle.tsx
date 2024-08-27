@@ -1,10 +1,11 @@
+// DarkModeToggle.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react"; // Import Moon and Sun icons
+import { Moon, Sun } from "lucide-react";
 
-export const DarkModeToggle = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+export default function DarkModeToggle() {
+  const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null);
 
   const toggleDarkMode = () => {
     const htmlElement = document.documentElement;
@@ -21,23 +22,29 @@ export const DarkModeToggle = () => {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
+    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (savedTheme) {
       document.documentElement.classList.add(savedTheme);
       setIsDarkMode(savedTheme === 'dark');
+    } else {
+      setIsDarkMode(prefersDarkMode);
     }
   }, []);
+
+  // Avoid rendering the button until the theme has been determined
+  if (isDarkMode === null) return null;
 
   return (
     <button
       onClick={toggleDarkMode}
-      className="p-2 rounded-full bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 flex items-center justify-center transition-all duration-300"
+      className="p-2 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center transition-all duration-300"
       aria-label="Toggle Dark Mode"
     >
       {isDarkMode ? (
-        <Sun className="text-yellow-500 w-5 h-5" /> // Sun icon for dark mode
+        <Sun className="text-yellow-500 w-5 h-5" />
       ) : (
-        <Moon className="text-gray-800 dark:text-gray-200 w-5 h-5" /> // Moon icon for light mode
+        <Moon className="text-gray-800 w-5 h-5" />
       )}
     </button>
   );
-};
+}

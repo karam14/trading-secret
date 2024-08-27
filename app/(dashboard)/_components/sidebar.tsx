@@ -1,7 +1,10 @@
 // Sidebar.tsx
-import { DarkModeToggle } from "./DarkModeToggle";
+import dynamic from 'next/dynamic';
 import { Logo } from "./logo";
 import { SidebarRoutes } from "./sidebar-routes";
+
+// Dynamically import DarkModeToggle with ssr: false
+const DynamicDarkModeToggle = dynamic(() => import('./DarkModeToggle'), { ssr: false });
 
 export const Sidebar = () => {
   return (
@@ -12,8 +15,7 @@ export const Sidebar = () => {
         </div>
         <div className="flex flex-col w-full">
           <SidebarRoutes />
-          <DarkModeToggle /> {/* Add the dark mode toggle */}
-
+          <DynamicDarkModeToggle /> {/* Use dynamically imported component */}
         </div>
       </div>
     </div>

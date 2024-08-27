@@ -1,11 +1,14 @@
+import dynamic from 'next/dynamic';
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import AuthButton from "@/components/AuthButton";
 import { ToastProvider } from "@/components/providers/toaster-provider";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
- 
 import { ourFileRouter } from "@/app/api/uploadthing/core";
+
+const DynamicThemeProvider = dynamic(() => import("next-themes").then(mod => mod.ThemeProvider), { ssr: false });
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -23,14 +26,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className}>
-
-
-    <body>
-        <main>
-          <ToastProvider />
-          {children}
-        </main>
-        </body>
+      <body>
+        <DynamicThemeProvider attribute="class" defaultTheme="dark">
+          <main>
+            <ToastProvider />
+            {children}
+          </main>
+        </DynamicThemeProvider>
+      </body>
     </html>
   );
 }
