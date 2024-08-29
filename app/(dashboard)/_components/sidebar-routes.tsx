@@ -40,8 +40,8 @@ const teacherRoutes = [
     },
     {
         icon: BarChart,
-        label: "Analytics",
-        href: "/teacher/analytics",
+        label: "Creator Dashboard",
+        href: "/teacher/creator",
         disabled: false,
         tooltip: "",
     },
