@@ -2,8 +2,8 @@
 
 import axios from "axios";
 import { CheckCircle, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { useState } from "react";
 import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";

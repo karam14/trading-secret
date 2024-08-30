@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pencil, Save, Trash, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
-import { Category } from "@/types/types";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { Category } from "@/types/types";
 
 const supabase = createClient();
 

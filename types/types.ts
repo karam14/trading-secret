@@ -21,6 +21,13 @@ export interface cloudinaryData {
   public_id: string;
   created_at: string;
 }
+export type ChatMessage = {
+  id: string;
+  session_id: string;
+  user_id: string;
+  message: string;
+  created_at: string; // or Date if you parse it as a Date object
+};
 
 export interface Course {
   id: string;

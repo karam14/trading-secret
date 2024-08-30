@@ -4,7 +4,10 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/use-debouce";
-import { usePathname, useRouter } from "next/navigation";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
+
+import { usePathname } from "next/navigation";
 import qs from "query-string";
 
 export const SearchInput = () => {

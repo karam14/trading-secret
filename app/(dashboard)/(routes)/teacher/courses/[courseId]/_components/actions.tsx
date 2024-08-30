@@ -4,8 +4,8 @@ import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface ActionsProps {

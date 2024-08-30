@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import {  File, ImageIcon, Loader2, Pencil, PlusCircle, X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { FileUpload } from "@/components/file-upload";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { FileUpload } from "@/components/file-upload";
 import Image from "next/image";
 
 const formSchema = z.object({

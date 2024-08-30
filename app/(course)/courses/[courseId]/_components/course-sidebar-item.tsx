@@ -1,7 +1,10 @@
 "use client";
 
 import { CheckCircle, Lock, PlayCircle } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
+
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface CourseSidebarItemProps {

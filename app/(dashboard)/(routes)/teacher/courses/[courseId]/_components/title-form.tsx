@@ -18,8 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
 const formSchema = z.object({
     title: z.string().min(1, { message: "Title is required" })
 });

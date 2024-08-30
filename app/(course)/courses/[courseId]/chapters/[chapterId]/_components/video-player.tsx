@@ -5,8 +5,8 @@ import { CldVideoPlayer } from "next-cloudinary";
 import 'next-cloudinary/dist/cld-video-player.css';
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Loader2, Lock } from "lucide-react";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { Loader2, Lock } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";

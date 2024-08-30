@@ -5,8 +5,8 @@ import axios from "axios";
 import { Pencil, PlusCircle, Video } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { Button } from "@/components/ui/button";
 import { CldUploadWidget, CldVideoPlayer } from "next-cloudinary";
 import 'next-cloudinary/dist/cld-video-player.css';
 

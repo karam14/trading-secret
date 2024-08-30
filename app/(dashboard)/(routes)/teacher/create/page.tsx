@@ -3,8 +3,8 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver} from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {Form, FormItem, FormDescription, FormMessage, FormField, FormLabel, FormControl} from "@/components/ui/form";
 import Link from "next/link";

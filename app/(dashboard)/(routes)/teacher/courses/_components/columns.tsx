@@ -6,8 +6,8 @@ import { ArrowUpDown, Pencil, Trash } from "lucide-react"
 import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

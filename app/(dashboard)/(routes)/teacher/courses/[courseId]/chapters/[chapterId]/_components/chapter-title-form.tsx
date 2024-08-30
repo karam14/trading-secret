@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
 import {
   Form,
   FormControl,

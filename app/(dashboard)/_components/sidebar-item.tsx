@@ -4,7 +4,12 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+
+
+import { usePathname } from "next/navigation";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
+
 
 interface SidebarItemProps {
   icon: LucideIcon;
@@ -16,7 +21,6 @@ interface SidebarItemProps {
 export const SidebarItem = ({ icon: Icon, label, href, disabled }: SidebarItemProps) => {
   const pathname = usePathname();
   const router = useRouter();
-
   const isActive =
     (pathname === "/" && href === "/") ||
     pathname === href ||
@@ -24,8 +28,7 @@ export const SidebarItem = ({ icon: Icon, label, href, disabled }: SidebarItemPr
 
   const onClick = () => {
     if (!disabled) {
-      router.push(href);
-    }
+      router.push(href);}
   };
 
   return (

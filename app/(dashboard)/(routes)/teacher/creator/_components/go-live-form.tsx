@@ -8,12 +8,25 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { VideoIcon, MicIcon } from 'lucide-react';
+import { goLive } from '@/actions/go-live'; // Import the goLive action
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
 
 export default function GoLiveForm() {
   const [streamType, setStreamType] = useState('voice-video'); // State to manage selected stream type
-
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const router = useRouter();
   const handleGoLive = async () => {
-    // Implement go live logic here
+    const type = streamType as string;
+    const roomName = await goLive({ title, description, type });
+
+    // Redirect based on the stream type
+    if (type === 'voice-only') {
+      router.push(`/teacher/live/audio?room=${roomName}`);
+    } else if (type === 'voice-video') {
+      router.push(`/teacher/live/video?room=${roomName}`);
+    }
   };
 
   return (
@@ -26,6 +39,8 @@ export default function GoLiveForm() {
           <Label htmlFor="live-title" className="text-gray-600 dark:text-gray-300">Stream Title</Label>
           <Input
             id="live-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter stream title"
             className="bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />
@@ -34,6 +49,8 @@ export default function GoLiveForm() {
           <Label htmlFor="live-description" className="text-gray-600 dark:text-gray-300">Description</Label>
           <Textarea
             id="live-description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter stream description"
             className="bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />

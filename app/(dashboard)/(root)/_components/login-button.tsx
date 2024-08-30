@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';import { Button } from "@/components/ui/button";
 
 export default function LoginButton() {
   const router = useRouter();
