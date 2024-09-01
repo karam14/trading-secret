@@ -12,6 +12,7 @@ export interface Chapter {
   course_id: string;
   created_at: string;
   updated_at: string;
+  position: number;
   cloudinary_data?: cloudinaryData | null;
 }
 

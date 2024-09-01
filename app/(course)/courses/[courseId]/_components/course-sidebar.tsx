@@ -17,7 +17,7 @@ export const CourseSidebar = async ({ course }: CourseSidebarProps) => {
         <h1 className="font-semibold">{course.title}</h1>
         {purchase && (
           <div className="mt-10">
-            <CourseProgress variant="success" value={progressCount} />
+            <CourseProgress variant="default" value={progressCount} />
           </div>
         )}
       </div>

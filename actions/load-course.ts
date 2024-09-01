@@ -34,33 +34,38 @@ export async function fetchCourseWithPublishedChapters(courseId: string) {
 export async function fetchUserCourseData(courseId: string, userId: string) {
   const supabase = createClient();
 
-  // Fetch the course with its chapters and user's progress
-  const { data: course, error: courseError } = await supabase
-    .from('courses')
-    .select(`
+// Fetch the course with its chapters and user's progress
+const { data: course, error: courseError } = await supabase
+  .from('courses')
+  .select(`
+    id,
+    title,
+    description,
+    is_published,
+    created_at,
+    updated_at,
+    categoryId,
+    chapters(
       id,
       title,
-      description,
+      position,
       is_published,
-      created_at,
-      updated_at,
-      categoryId,
-      chapters(
+      is_free,
+      userProgress:user_progress(
         id,
-        title,
-        position,
-        is_published,
-        is_free,
-        userProgress:user_progress(
-          id,
-          user_id,
-          chapter_id,
-          is_completed
-        )
+        user_id,
+        chapter_id,
+        is_completed
       )
-    `)
-    .eq('id', courseId)
-    .single();
+    )
+  `)
+  .eq('id', courseId)
+  .single();
+
+// Ensure chapters are sorted by their position
+if (course && course.chapters) {
+  course.chapters.sort((a, b) => a.position - b.position);
+}
 
   if (courseError || !course) {
     console.error("[fetchCourseData] Error fetching course:", courseError);

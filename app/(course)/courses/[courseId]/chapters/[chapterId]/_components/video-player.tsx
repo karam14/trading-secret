@@ -72,21 +72,33 @@ export const VideoPlayer = ({
   };
 
   return (
+    <>
     <div className="flex justify-center items-center w-full h-auto bg-black rounded-lg overflow-hidden mb-4">
+
+      {publicId ? (
+
       <CldVideoPlayer
-        id="sea-turtle" // Unique ID for the player
-        src= {publicId! || "samples/sea-turtle"}
-        onEnded={onEnd} // Cloudinary publicId as the source
+      id="sea-turtle" // Unique ID for the player
+      src= {publicId! ||""}
+      onEnded={onEnd} // Cloudinary publicId as the source
+
+  
+    />
+
+      ):(
+
+        <Loader2 className="w-12 h-12 text-white" />
+
+      )}
 
     
-      />
-    
       {isLocked && (
-        <div className="absolute flex items-center justify-center w-full h-full bg-black bg-opacity-75">
+        <div className="flex justify-center items-center w-full h-auto bg-black rounded-lg overflow-hidden mb-4">
           <Lock className="w-12 h-12 text-white" />
           <span className="ml-2 text-white">Content Locked</span>
         </div>
       )}
     </div>
+    </>
   );
 };

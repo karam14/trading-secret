@@ -31,10 +31,10 @@ export const getCourses = async ({
         updated_at,
         is_published,
         category:categories(id, name, created_at, updated_at),
-        chapters(id, title, description, is_free, is_published, video_url, course_id, created_at, updated_at)
+        chapters(id, position, title, description, is_free, is_published, video_url, course_id, created_at, updated_at)
       `)
       .eq('is_published', true)
-      .order('created_at', { ascending: false });
+      ;
 
     if (title) {
       courseQuery = courseQuery.ilike('title', `%${title}%`);
