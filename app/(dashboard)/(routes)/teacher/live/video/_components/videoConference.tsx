@@ -21,7 +21,8 @@ import { checkSessionOwner } from '@/actions/check-session';
 import { useSearchParams } from 'next/navigation';
 import { useStreamStatus } from '@/hooks/use-stream';
 import { updateSession } from '@/utils/livekit/roomService';
-
+// @ts-expect-error - no types
+import { useRouter } from 'nextjs-toploader/app';
 export function VideoConference({ sessionId, userId = '' }: { sessionId: string; userId?: string }, ...props: any) {
   const [widgetState, setWidgetState] = useState<WidgetState>({
     showChat: false,
@@ -29,6 +30,8 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
     showSettings: false,
   });
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [userDisconnected, setUserDisconnected] = useState<boolean>(false);
+  const router = useRouter();
 
   const searchParams = useSearchParams();
   const roomName = searchParams.get('room');
@@ -47,7 +50,7 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
     const fetchSessionOwner = async () => {
       if (roomName ) {
         const owner = await checkSessionOwner(roomName, userId);
-        setIsOwner(owner);
+        //  setIsOwner(owner);
       }
     };
     fetchSessionOwner();
@@ -68,6 +71,10 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
     }
     await updateSession(roomName, false); // Update stream status to inactive in the database
   };
+const handleUserDisconnect = () => {
+  setUserDisconnected(true);
+}
+    
 
   if (!roomName) {
     return (
@@ -96,6 +103,24 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
 
 
   return (
+    <>
+      {userDisconnected ? (
+     <div className="h-screen">
+     <div className="flex justify-center items-center h-full w-full bg-gray-900">
+       <div className="bg-gray-800 text-gray-300 p-8 rounded-xl shadow-xl text-center">
+         <h1 className="text-3xl font-bold mb-4">Stream Ended</h1>
+         <p className="text-lg mb-6">You have left the live stream. Thank you for joining us!</p>
+         <Button onClick={() => router.push('/teacher/creator')} variant="subtleGradient">
+           Go to Creator Dashboard
+         </Button>
+       </div>
+     </div>
+   </div>
+
+      ) :(
+
+
+
     <div className="min-[1280px]:flex h-full w-full">
       <div className="lk-video-conference flex h-full w-full" {...props}>
         {isWeb() && (
@@ -122,12 +147,18 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
                   controls={{ chat: true,leave: false,  settings: !!widgetState.showSettings }}
                   onChatToggle={handleChatToggle}
                   onDisconnect={handleDisconnect}
+                  onUserDisconnect={handleUserDisconnect}
+                  isOwner={isOwner}
                 />
               ) : (
                 <CustomControlBar
-                  controls={{ chat: true,  settings: !!widgetState.showSettings }}
+                  controls={{ chat: true, leave: false, settings: !!widgetState.showSettings }}
                   onChatToggle={handleChatToggle}
                   onDisconnect={handleDisconnect}
+                  onUserDisconnect={handleUserDisconnect}
+
+                  isOwner={isOwner}
+
                 />
               )}
 
@@ -144,5 +175,10 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
         </div>
       )}
     </div>
+      )}
+    </>
   );
+
+
 }
+
