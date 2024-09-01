@@ -117,11 +117,20 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
                   </FocusLayoutContainer>
                 </div>
               )}
-              <CustomControlBar
-                controls={{ chat: false, leave: false, settings: !!widgetState.showSettings }}
-                onChatToggle={handleChatToggle}
-                onDisconnect={handleDisconnect} // Updated disconnect handler
-              />
+              {isOwner ? (
+                <CustomControlBar
+                  controls={{ chat: true,leave: false,  settings: !!widgetState.showSettings }}
+                  onChatToggle={handleChatToggle}
+                  onDisconnect={handleDisconnect}
+                />
+              ) : (
+                <CustomControlBar
+                  controls={{ chat: true,  settings: !!widgetState.showSettings }}
+                  onChatToggle={handleChatToggle}
+                  onDisconnect={handleDisconnect}
+                />
+              )}
+
             </div>
           </LayoutContextProvider>
         )}
