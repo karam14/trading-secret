@@ -17,8 +17,7 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
   const [newMessage, setNewMessage] = useState('');
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const messages = useChatMessages(sessionId);
+  const { messages, loading } = useChatMessages(sessionId); // Use loading from the hook
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -28,6 +27,12 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
         .from('stream_interactions')
         .insert([{ session_id: sessionId, user_id: userId, message: newMessage }]);
       setNewMessage(''); // Clear input field after sending the message
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      sendMessage();
     }
   };
 
@@ -50,10 +55,6 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
   };
 
   useEffect(() => {
-    if (loading && messages.length > 0) {
-      setLoading(false);
-    }
-
     if (isAtBottom) {
       scrollToBottom();
     } else {
@@ -91,15 +92,21 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
             <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
           </div>
         ) : (
-          messages.map((msg) => (
-            <div key={msg.id} className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words">
-              <strong className="text-blue-600 dark:text-blue-400">{msg.userName}:</strong>
-              <p className="ml-2 text-gray-800 dark:text-gray-300">{msg.message}</p>
-              <span className="text-gray-500 dark:text-gray-400 text-xs">
-                {new Date(msg.created_at).toLocaleTimeString()}
-              </span>
+          messages.length > 0 ? (
+            messages.map((msg) => (
+              <div key={msg.id} className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words">
+                <strong className="text-blue-600 dark:text-blue-400">{msg.userName}:</strong>
+                <p className="ml-2 text-gray-800 dark:text-gray-300">{msg.message}</p>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">
+                  {new Date(msg.created_at).toLocaleTimeString()}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="flex justify-center items-center h-full">
+              <p className="text-gray-500 dark:text-gray-400">No messages yet. Start the conversation!</p>
             </div>
-          ))
+          )
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -118,6 +125,7 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type your message..."
+          onKeyPress={handleKeyPress} // Add this line to handle "Enter" key press
           className="flex-grow bg-white dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400"
         />
         <Button

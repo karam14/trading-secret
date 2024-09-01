@@ -3,24 +3,19 @@ import React from 'react';
 import { useRoomContext } from '@livekit/components-react';
 import { Button } from '@/components/ui/button';
 import { deleteRoom } from '@/utils/livekit/roomService';
+
 interface CustomDisconnectButtonProps  {
-  onDisconnect: () => void; // Add the disconnect prop
+  onUserDisconnect: () => void; // Add the disconnect prop
 }
 
 
-const CustomDisconnectButton: React.FC<CustomDisconnectButtonProps> = ({onDisconnect}) => {
+const CustomUserDisconnectButton: React.FC<CustomDisconnectButtonProps> = ({ onUserDisconnect }) => {
   const room = useRoomContext();
 
   const handleDisconnect = async () => {
     try {
-    
-
-    await deleteRoom(room.name);
-    console.log(room.metadata);
-    
-
       room.disconnect();
-      onDisconnect();
+      onUserDisconnect();
 
     } catch (error) {
       console.error('Failed to remove the room and disconnect:', error);
@@ -28,12 +23,12 @@ const CustomDisconnectButton: React.FC<CustomDisconnectButtonProps> = ({onDiscon
   };
 
   return (
-    <div className='z-50'>
+    <div className='z-40'>
     <Button variant="destructive" onClick={handleDisconnect} className="pt-6 pb-6 pl-4 pr-4">
-      End Session
+      Leave Stream
     </Button>
     </div>
   );
 };
 
-export default CustomDisconnectButton;
+export default CustomUserDisconnectButton;

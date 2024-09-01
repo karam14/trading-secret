@@ -14,6 +14,7 @@ export const useChatMessages = (sessionId: string) => {
       userName: string;
     }[]
   >([]);
+  const [loading, setLoading] = useState(true); // New state to track loading
 
   useEffect(() => {
     const fetchMessagesWithUsernames = async () => {
@@ -42,6 +43,8 @@ export const useChatMessages = (sessionId: string) => {
       if (error) {
         console.error('Error fetching messages:', error);
       }
+
+      setLoading(false); // Set loading to false after fetching
     };
 
     fetchMessagesWithUsernames();
@@ -74,5 +77,5 @@ export const useChatMessages = (sessionId: string) => {
     };
   }, [sessionId]);
 
-  return messages;
+  return { messages, loading };
 };

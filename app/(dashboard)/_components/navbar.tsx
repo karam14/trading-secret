@@ -8,7 +8,7 @@ export const Navbar = async () => {
     const currentProfile = await getSafeProfile();
 
     return (
-        <div className="p-4 border-b h-full flex items-center bg-white dark:bg-gray-800 shadow-sm">
+        <div className="p-4 border-b h-full flex items-center bg-white dark:bg-gray-800 shadow-sm z-50">
             <MobileSidebar />
             <NavbarRoutes currentProfile={currentProfile} />
         </div>
