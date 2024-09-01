@@ -4,6 +4,7 @@ import exp from "constants";
 import { RoomServiceClient } from "livekit-server-sdk";
 
 import type { ParticipantInfo, TrackInfo } from "livekit-server-sdk";
+import { createClient } from "../supabase/server";
 
 export async function client () {
     const apiKey = process.env.LIVEKIT_API_KEY as string;
@@ -13,10 +14,36 @@ const url = process.env.NEXT_PUBLIC_LIVEKIT_URL as string;
     console.log('client',  apiKey,url, apiSecret);
     return ServiceClient;
 };
+export async function updateSession(roomName: string, status: true | false) {
 
+  try {
+    const supabase = createClient();
+    console.log('updateSession', roomName, status);
+    await supabase.from('stream_sessions').update({
+        room_name: roomName,
+        is_active: status,
+    }).eq('room_name', roomName);
+  }
+  catch (error) {
+    console.error('Failed to update session:', error);
+    
+  }
+}
 export async function deleteRoom(roomName: string) {
+  try {
     const ServiceClient = await client();
+    await updateSession(roomName, false);
+
+    console.log('deleteRoom', roomName);
+    await ServiceClient.updateRoomMetadata (roomName, 'ended');
+
     await ServiceClient.deleteRoom(roomName);
+    
+
+  }
+  catch (error) {
+    console.error('Failed to remove the room:', error);
+  }
 }
 
 export async function listParticipants(roomName: string) {

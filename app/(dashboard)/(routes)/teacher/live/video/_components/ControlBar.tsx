@@ -6,9 +6,10 @@ import { MessageSquareMore } from 'lucide-react';
 
 interface CustomControlBarProps extends ControlBarProps {
   onChatToggle: () => void; // Add the chat toggle prop
+  onDisconnect: () => void; // Add the disconnect prop
 }
 
-export const CustomControlBar: React.FC<CustomControlBarProps> = ({ onChatToggle, ...props }) => {
+export const CustomControlBar: React.FC<CustomControlBarProps> = ({ onChatToggle,onDisconnect, ...props }) => {
   return (
     <div className="flex justify-center">
       <div className="w-auto">
@@ -16,14 +17,14 @@ export const CustomControlBar: React.FC<CustomControlBarProps> = ({ onChatToggle
           {...props}
           controls={{
             ...props.controls,
-            leave: false, // Disable the default leave button
+         
           }}
         >
           {props.children}
         </LiveKitControlBar>
       </div>
       <div className="w-auto p-3">
-        <CustomDisconnectButton />
+        <CustomDisconnectButton onDisconnect={onDisconnect} />
       </div>
       <button onClick={onChatToggle} className="chat-toggle-button">
         <MessageSquareMore />
