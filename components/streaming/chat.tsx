@@ -84,12 +84,12 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
       >
         {loading ? (
           <div className="space-y-2">
-            <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
-            <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
-            <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
-            <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
-            <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
-            <Skeleton className="p-3 mb-2 rounded-md bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
+            <Skeleton className="p-3 mb-2 bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
+            <Skeleton className="p-3 mb-2  bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
+            <Skeleton className="p-3 mb-2  bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
+            <Skeleton className="p-3 mb-2  bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
+            <Skeleton className="p-3 mb-2 bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
+            <Skeleton className="p-3 mb-2  bg-gray-100 dark:bg-gray-700 break-words h-28 w-full rounded-xl" />
           </div>
         ) : (
           messages.length > 0 ? (

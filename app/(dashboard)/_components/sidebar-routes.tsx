@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, Compass, Layout, List, LogOutIcon, Lock } from "lucide-react";
+import { BarChart, Compass, Layout, List, LogOutIcon, Lock, Podcast } from "lucide-react";
 import SidebarItem from "./sidebar-item";
 import { usePathname } from "next/navigation";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"; // Import Tooltip components
@@ -18,6 +18,13 @@ const guestRoutes = [
         icon: Compass,
         label: "Browse Courses",
         href: "/browse",
+        disabled: false,
+        tooltip: "",
+    },
+    {
+        icon:  Podcast,
+        label: "Live Streams",
+        href: "/live",
         disabled: false,
         tooltip: "",
     },

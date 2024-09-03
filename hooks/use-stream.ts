@@ -10,27 +10,25 @@ export const useStreamStatus = (roomName: string) => {
     const fetchInitialStatus = async () => {
       if (!roomName || roomName === '') {
         setStreamStatus('loading');
-      }
-      else{
-      const { data, error } = await supabase
-        .from('stream_sessions')
-        .select('is_active')
-        .eq('room_name', roomName)
-        .single();
-        
+      } else {
+        const { data, error } = await supabase
+          .from('stream_sessions')
+          .select('is_active')
+          .eq('room_name', roomName)
+          .single();
 
-      if (data) {
-        setStreamStatus(data.is_active ? 'active' : 'ended');
-      }
+        if (data) {
+          setStreamStatus(data.is_active ? 'active' : 'ended');
+        }
 
-      if (error) {
-        console.error('Error fetching stream status:', error);
-        setStreamStatus('ended');
-      }
+        if (error) {
+          console.error('Error fetching stream status:', error);
+          setStreamStatus('ended');
+        }
 
-      console.log('Initial stream status:', data);
+        console.log('Initial stream status:', data);
+      }
     };
-}
 
     fetchInitialStatus();
 
@@ -44,7 +42,7 @@ export const useStreamStatus = (roomName: string) => {
           table: 'stream_sessions',
           filter: `room_name=eq.${roomName}`,
         },
-        async(payload) => {
+        async (payload) => {
           console.log('Realtime update received:', payload);
 
           const newStatus = payload.new.is_active ? 'active' : 'ended';
@@ -53,12 +51,27 @@ export const useStreamStatus = (roomName: string) => {
           setStreamStatus(newStatus);
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'stream_sessions',
+          filter: `room_name=eq.${roomName}`,
+        },
+        (payload) => {
+          console.log('Realtime delete received:', payload);
+
+          // When the session is deleted, set status to 'ended'
+          setStreamStatus('ended');
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [roomName, streamStatus, setStreamStatus]);
+  }, [roomName]);
 
   return streamStatus;
 };

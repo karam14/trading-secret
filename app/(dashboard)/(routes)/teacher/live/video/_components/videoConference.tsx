@@ -70,7 +70,6 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
     if (!roomName) {
       return;
     }
-    await updateSession(roomName, false); // Update stream status to inactive in the database
   };
 const handleUserDisconnect = () => {
   setUserDisconnected(true);

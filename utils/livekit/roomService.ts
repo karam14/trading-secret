@@ -15,18 +15,38 @@ const url = process.env.NEXT_PUBLIC_LIVEKIT_URL as string;
     return ServiceClient;
 };
 export async function updateSession(roomName: string, status: true | false) {
+  const supabase = createClient();
 
   try {
-    const supabase = createClient();
     console.log('updateSession', roomName, status);
-    await supabase.from('stream_sessions').update({
-        room_name: roomName,
+
+    if (status) {
+      // Update the session to be active
+      const { error } = await supabase.from('stream_sessions').update({
         is_active: status,
-    }).eq('room_name', roomName);
-  }
-  catch (error) {
+      }).eq('room_name', roomName);
+
+      if (error) {
+        throw error;
+      }
+      console.log(`Session ${roomName} updated to active.`);
+    } else {
+      console.log(`Session ${roomName} updated to inactive.`);
+      // fetch the stream id from sessions tabl
+      const { data, error} = await supabase.from('stream_sessions').select('stream_id').eq('room_name', roomName).single();
+      if (error) {
+        console.error('Failed to fetch stream id:', error);
+      }
+      console.log('data', data);
+      const streamId = data!.stream_id;
+      console.log('streamId', streamId);
+      // delete the stream from the streams table
+      await supabase.from('streams').delete().eq('id', streamId);
+
+      console.log(`Session ${roomName} deleted.`);
+    }
+  } catch (error) {
     console.error('Failed to update session:', error);
-    
   }
 }
 export async function deleteRoom(roomName: string) {

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 // @ts-expect-error - no types
-import { useRouter } from 'nextjs-toploader/app';import { fetchProfileData,updateProfileData, updatePassword, uploadProfileImage } from "@/actions/profile-actions"
+import { useRouter } from 'nextjs-toploader/app';
+import { fetchProfileData,updateProfileData, updatePassword, uploadProfileImage } from "@/actions/profile-actions"
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
