@@ -4,6 +4,7 @@ import { AccessToken, RoomServiceClient } from 'livekit-server-sdk';
 import { createClient } from '../supabase/server';
 import getUser from '@/actions/get-user';
 import { cookies } from 'next/headers';
+import { randomUUID } from 'crypto';
 
 export async function createLiveRoom(userId: string, roomType: string) {
   const supabase = createClient();
@@ -41,6 +42,7 @@ export async function generateToken(roomName: string, userId: string, roomType: 
 
   const token = new AccessToken(apiKey, apiSecret, {
     identity: userName,
+    name: userName,
     ttl: '2h', // Token valid for 2 hours
   });
 
@@ -73,3 +75,54 @@ export async function generateToken(roomName: string, userId: string, roomType: 
   
   return token.toJwt();
 }
+type CustomUser = {
+  id: string;
+  name: string;
+  image_url: string | null;
+
+};
+export const createViewerToken = async (host: CustomUser, roomName: string) => {
+  let self;
+  let username;
+
+
+  try {
+    const {user,error} = await getUser();
+    self = user;
+    const userName = await supabase.from('profiles').select('name').eq('id', self?.id).single().then((data: any) => {
+      username = data.data?.name;
+      return data.data?.name;
+    }
+
+  );	
+  
+
+  } catch {
+    const id =  randomUUID();
+    const username = `guest-${Math.floor(Math.random() * 100000)}`;
+    self = { id, username };
+  }
+
+
+  const isHost = self?.id === host.id;
+
+
+
+  const token = new AccessToken(
+    process.env.LIVEKIT_API_KEY!,
+    process.env.LIVEKIT_API_SECRET!,
+    {
+      identity: isHost ? `Host-${self?.id}` : `remote-${self?.id.toString()}`,
+      
+    }
+  );
+
+  token.addGrant({
+    room: roomName,
+    roomJoin: true,
+    canPublish: false,
+    canPublishData: true,
+  });
+
+  return await Promise.resolve(token.toJwt());
+};

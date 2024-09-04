@@ -119,6 +119,7 @@ const VideoLive = () => {
       audio={true}
       video={false}
       token={token}
+      
       serverUrl={wsUrl}
       data-lk-theme="default"
       style={{ height: '80vh' }}

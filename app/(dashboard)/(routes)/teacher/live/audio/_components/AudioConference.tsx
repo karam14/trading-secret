@@ -58,7 +58,7 @@ export function AudioConference({ sessionId,userId = '',...props }: AudioConfere
     fetchSessionOwner();
   }, [roomName, userId]);
 
-  const audioTracks = useTracks([Track.Source.Microphone]);
+  const audioTracks = useTracks([Track.Source.Microphone]).filter((track) => !track.participant?.identity.startsWith('remote-'));
   const handleDisconnect = async () => {
     if (!roomName) {
       return;

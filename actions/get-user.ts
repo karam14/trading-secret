@@ -10,3 +10,14 @@ export default async function getUser() {
   return { user, error }
 }
 
+
+export async function getUserById(id: string){
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+    .from('profile_view')
+    .select('*')
+    .eq('id', id)
+    .single();
+    return data;
+}

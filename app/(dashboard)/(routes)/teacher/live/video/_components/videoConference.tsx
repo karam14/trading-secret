@@ -42,7 +42,7 @@ export function VideoConference({ sessionId, userId = '' }: { sessionId: string;
       { source: Track.Source.Camera, withPlaceholder: true },
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
-  );
+  ).filter((track) => !track.participant?.identity.startsWith('remote-'));
   
   const layoutContext = useCreateLayoutContext();
   const focusTrack = usePinnedTracks(layoutContext)?.[0];

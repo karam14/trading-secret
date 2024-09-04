@@ -136,3 +136,36 @@ export const useScheduledStreams = () => {
 
     return scheduledStreams;
 };
+
+
+export const fetchCreatorId = async (id: string) => {
+  const { data, error } = await supabase
+    .from('streams')
+    .select('creator_id')
+    .eq('id', id)
+    .single();
+    const userId = data?.creator_id as string;
+
+  if (error) {
+    console.error('Error fetching creator ID:', error);
+    return null;
+  }
+
+  return userId;
+}
+
+export const fetchRoomName = async (id: string) => {
+  const { data, error } = await supabase
+    .from('stream_sessions')
+    .select('room_name')
+    .eq('stream_id', id)
+    .single();
+    const roomName = data?.room_name as string;
+
+  if (error) {
+    console.error('Error fetching room name:', error);
+    return null;
+  }
+
+  return roomName;
+}

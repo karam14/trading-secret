@@ -10,7 +10,7 @@ export const StreamCard = ({ stream }: { stream: any }) => {
 
   const handleCardClick = () => {
     // Redirect to the stream's page (assuming there's a dynamic route for stream details)
-    router.push(`/streams/${stream.id}`);
+    router.push(`/live/${stream.id}`);
   };
 
   return (
