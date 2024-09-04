@@ -1,15 +1,15 @@
-// app/page.tsx
-
 "use client"
 
 import { useState } from "react"
 import { addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, setYear, setMonth, isSameDay, isSameMonth, format } from "date-fns"
+import { ar } from 'date-fns/locale'  // Import the Arabic locale
 import { StreamList } from "./_components/streamList"
 import { Calendar } from "./_components/calendar"
 import { StreamDialog } from "./_components/streamDialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useLiveStreams, useScheduledStreams } from "@/actions/stream-page.actions"
 import { Button } from "@/components/ui/button"
+
 type Stream = {
   id: string;
   name: string;
@@ -19,6 +19,7 @@ type Stream = {
     name: any;
   }[];
 }
+
 export default function Page() {
   const [currentDate, setCurrentDate] = useState(new Date(2024, 8, 1))
   const [selectedDay, setSelectedDay] = useState<Date>(new Date())
@@ -34,7 +35,6 @@ export default function Page() {
     description: stream.description,
     profiles: stream.profile_view
   }));
-  console.log(scheduledStreams)
 
   const handlePreviousMonth = () => setCurrentDate(subMonths(currentDate, 1))
   const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1))
@@ -58,12 +58,11 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-6 text-gray-100">Live Streaming Platform</h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 p-8">
       <Tabs defaultValue="current" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="current">Current Streams</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="current">البث المباشر</TabsTrigger>
+          <TabsTrigger value="calendar">جدول البث</TabsTrigger>
         </TabsList>
         <TabsContent value="current">
           <StreamList streams={liveStreams} />
@@ -79,38 +78,36 @@ export default function Page() {
             renderDayView={() => {
               return (
                 <>
-                <div className="grid grid-cols-7 gap-2 text-center mb-2">
-                  {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
-                    <div key={day} className="font-medium text-gray-400">
-                      {day}
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-7 gap-2 flex-grow">
-                  {days.map((day) => {
-                    const hasStream = scheduledStreams.some(
-                      stream => isSameDay(stream.date, day)
-                    );
-                    return (
-                      <Button
-                        key={day.toString()}
-                        onClick={() => handleDateSelect(day)}
-                        variant={hasStream ? "default" : "ghost"}
-         
-                        className={`cn(text-slate-500 dark:text-slate-200  font-[100]  transition-all hover:text-slate-600 hover:bg-slate-300/20 dark:hover:bg-slate-600/20",)
-                          h-16 flex flex-col items-center justify-center ${
-                          !isSameMonth(day, currentDate) ? 'text-gray-500' : 'text-gray-100'
-                        } ${hasStream ? ' dark:text-slate-600 bg-primary text-primary-foreground hover:bg-primary/90' : ''}`}
-                      >
-                        <span className="text-lg">{format(day, 'd')}</span>
-                        {hasStream && (
-                          <div className="w-1.5 h-1.5 bg-current rounded-full mt-1" />
-                        )}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </>
+                  <div className="grid grid-cols-7 gap-2 text-center mb-2">
+                    {['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'].map((day) => (
+                      <div key={day} className="font-medium text-gray-600 dark:text-gray-400">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-7 gap-2 flex-grow">
+                    {days.map((day) => {
+                      const hasStream = scheduledStreams.some(
+                        stream => isSameDay(stream.date, day)
+                      );
+                      return (
+                        <Button
+                          key={day.toString()}
+                          onClick={() => handleDateSelect(day)}
+                          variant={hasStream ? "default" : "ghost"}
+                          className={`h-16 flex flex-col items-center justify-center ${
+                            !isSameMonth(day, currentDate) ? 'text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100'
+                          } ${hasStream ? 'bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground hover:bg-primary/90' : ''}`}
+                        >
+                          <span className="text-lg">{format(day, 'd', { locale: ar })}</span>
+                          {hasStream && (
+                            <div className="w-1.5 h-1.5 bg-current rounded-full mt-1" />
+                          )}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </>
               )
             }}
             renderMonthView={() => {
@@ -124,9 +121,9 @@ export default function Page() {
                         setViewMode('day')
                       }}
                       variant="ghost"
-                      className="h-16 text-gray-100"
+                      className="h-16 text-gray-900 dark:text-gray-100"
                     >
-                      {format(setMonth(currentDate, i), 'MMM')}
+                      {format(setMonth(currentDate, i), 'MMM', { locale: ar })}
                     </Button>
                   ))}
                 </div>
@@ -143,7 +140,7 @@ export default function Page() {
                         setViewMode('month')
                       }}
                       variant="ghost"
-                      className="h-16 text-gray-100"
+                      className="h-16 text-gray-900 dark:text-gray-100"
                     >
                       {currentDate.getFullYear() - 5 + i}
                     </Button>
@@ -162,5 +159,6 @@ export default function Page() {
         scheduledStreams={scheduledStreams}
       />
     </div>
-  )
+  );
+  
 }

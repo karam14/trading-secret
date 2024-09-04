@@ -37,7 +37,7 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={toggleDarkMode}
-      className="p-2 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center transition-all duration-300"
+      className="p-2 rounded-full w-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center transition-all duration-300"
       aria-label="Toggle Dark Mode"
     >
       {isDarkMode ? (

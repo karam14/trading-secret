@@ -15,28 +15,30 @@ export const StreamCard = ({ stream }: { stream: any }) => {
 
   return (
     <Card 
-      className="bg-gray-800 border-gray-700 relative cursor-pointer" 
+      className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 relative cursor-pointer" 
       onClick={handleCardClick}
     >
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
-          <h3 className="text-xl font-semibold text-gray-100 mb-2">{stream.title}</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{stream.title}</h3>
           {stream.is_live && (
             <div className={cn("text-red-500 animate-pulse")}>
               <Radio className="h-6 w-6" />
             </div>
           )}
         </div>
-        <div className="aspect-video bg-gray-700 mb-4">
+        <div className="aspect-video bg-gray-200 dark:bg-gray-700 mb-4">
           <img 
             src={stream.profile_view.image_url} 
             alt={stream.title} 
             className="object-cover w-full h-full"
           />
         </div>
-        <p className="text-gray-300 mb-4">{stream.description}</p>
-        <p className="text-sm text-gray-400">Host: {stream.profile_view.name}</p>
+        <p className="text-gray-700 dark:text-gray-300 mb-4">{stream.description}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Host: {stream.profile_view.name}</p>
       </CardContent>
     </Card>
   );
+  
+  
 };

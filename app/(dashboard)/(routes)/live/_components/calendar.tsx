@@ -1,7 +1,6 @@
-// components/Calendar.tsx
-
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { format } from "date-fns"
+import { ar } from 'date-fns/locale'  // Import the Arabic locale
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils";
@@ -31,28 +30,28 @@ type CalendarProps = {
     renderYearView,
     viewMode,
   }: CalendarProps) => {
-  return (
-    <Card className="bg-gray-800 border-gray-700 h-full">
-      <CardContent className="p-4 h-full flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <Button onClick={handlePreviousMonth} variant="ghost" size="icon" className="text-gray-100">
-            <ChevronLeft className="h-6 w-6" />
-            <span className="sr-only">Previous month</span>
-          </Button>
-          <Button onClick={handleHeaderClick} variant="ghost" className="text-xl font-semibold text-gray-100">
-            {viewMode === 'day' && format(currentDate, 'MMMM yyyy')}
-            {viewMode === 'month' && format(currentDate, 'yyyy')}
-            {viewMode === 'year' && `${currentDate.getFullYear() - 5} - ${currentDate.getFullYear() + 6}`}
-          </Button>
-          <Button onClick={handleNextMonth} variant="ghost" size="icon"   >
-            <ChevronRight className="h-6 w-6" />
-            <span className="sr-only">Next month</span>
-          </Button>
-        </div>
-        {viewMode === 'day' && renderDayView()}
-        {viewMode === 'month' && renderMonthView()}
-        {viewMode === 'year' && renderYearView()}
-      </CardContent>
-    </Card>
-  )
+    return (
+      <Card className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 h-full">
+        <CardContent className="p-4 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <Button onClick={handlePreviousMonth} variant="ghost" size="icon" className="text-gray-900 dark:text-gray-100">
+              <ChevronLeft className="h-6 w-6" />
+              <span className="sr-only">Previous month</span>
+            </Button>
+            <Button onClick={handleHeaderClick} variant="ghost" className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              {viewMode === 'day' && format(currentDate, 'MMMM yyyy', { locale: ar })}
+              {viewMode === 'month' && format(currentDate, 'yyyy', { locale: ar })}
+              {viewMode === 'year' && `${currentDate.getFullYear() - 5} - ${currentDate.getFullYear() + 6}`}
+            </Button>
+            <Button onClick={handleNextMonth} variant="ghost" size="icon" className="text-gray-900 dark:text-gray-100">
+              <ChevronRight className="h-6 w-6" />
+              <span className="sr-only">Next month</span>
+            </Button>
+          </div>
+          {viewMode === 'day' && renderDayView()}
+          {viewMode === 'month' && renderMonthView()}
+          {viewMode === 'year' && renderYearView()}
+        </CardContent>
+      </Card>
+    )
 }

@@ -1,23 +1,21 @@
-
+import SidebarWrapper from "./_components/sidebar-wrapper";
 import { Navbar } from "./_components/navbar";
-import { Sidebar } from "./_components/sidebar";
 
 const DashboardLayout = ({
   children
 }: { children: React.ReactNode }) => {
   return (
-    <div className="h-full">
-      <div className="h-[80px] lg:pr-56 fixed inset-y-0 w-full z-50">
-        <Navbar />
-      </div>
-      <div className="hidden lg:flex w-56 flex-col fixed inset-y-0 right-0 z-50">
-        <Sidebar />
-      </div>
-      <main className="lg:pr-56 pt-[80px] h-full">
-        {children}
-      </main>
+    <>
+    <div className="md:pr-12 z-50">
+      
+            <Navbar />
     </div>
+
+      <SidebarWrapper>
+      {children}
+    </SidebarWrapper>
+      </>
   );
-}
+};
 
 export default DashboardLayout;
