@@ -11,6 +11,7 @@ import getUser from "@/actions/get-user";
 
 export default async function Dashboard() {
   const {user, error} = await getUser();
+  
   if (error || !user) {
     return (
       <div className="p-6 space-y-8 text-right">
