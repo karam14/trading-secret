@@ -2,7 +2,7 @@
 import React from 'react';
 import { useRoomContext } from '@livekit/components-react';
 import { Button } from '@/components/ui/button';
-import { deleteRoom } from '@/utils/livekit/roomService';
+import { deleteRoom, updateSession } from '@/utils/livekit/roomService';
 interface CustomDisconnectButtonProps  {
   onDisconnect: () => void; // Add the disconnect prop
 }

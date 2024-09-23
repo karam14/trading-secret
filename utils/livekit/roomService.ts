@@ -40,6 +40,9 @@ export async function updateSession(roomName: string, status: true | false) {
       console.log('data', data);
       const streamId = data!.stream_id;
       console.log('streamId', streamId);
+      await supabase.from('stream_sessions').update({
+        is_active: status,
+      }).eq('room_name', roomName);
       // delete the stream from the streams table
       await supabase.from('streams').delete().eq('id', streamId);
 

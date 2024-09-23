@@ -1,17 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useSession } from "@supabase/auth-helpers-react";
 import { signIn, signUp } from "./_components/serverActions";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient();
 
 export default function AuthForm({ searchParams }: { searchParams: { message: string } }) {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState(false); // For confirm password field
   const [isSignUp, setIsSignUp] = useState(false); // Track if it's signup mode
   const [loading, setLoading] = useState(false); // Track loading state
+  const session = useSession();
+  const router = useRouter();
+
+  // Redirect to home if already logged in
+  useEffect(() => {
+    if (session) {
+      router.replace('/');
+    }
+  }, [session, router]);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setConfirmPassword(!confirmPassword);
@@ -29,6 +43,10 @@ export default function AuthForm({ searchParams }: { searchParams: { message: st
 
     setLoading(false);
   };
+
+  if (session) {
+    return <div>Loading...</div>; // Optional loading state while redirecting
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">

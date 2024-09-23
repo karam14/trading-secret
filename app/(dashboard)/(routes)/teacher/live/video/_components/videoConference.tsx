@@ -19,8 +19,7 @@ import Chat from '@/components/streaming/chat';
 import { Button } from '@/components/ui/button';
 import { checkSessionOwner } from '@/actions/check-session';
 import { useSearchParams } from 'next/navigation';
-import { useStreamStatus } from '@/hooks/use-stream';
-import { updateSession } from '@/utils/livekit/roomService';
+
 // @ts-expect-error - no types
 import { useRouter } from 'nextjs-toploader/app';
 

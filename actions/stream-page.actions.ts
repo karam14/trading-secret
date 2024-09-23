@@ -169,3 +169,27 @@ export const fetchRoomName = async (id: string) => {
 
   return roomName;
 }
+
+export const fetchStreamType = async (session_id: string) => {
+  // Define the expected shape of the data
+  type StreamTypeResponse = {
+    stream_id: string;
+    streams: {
+      type: string;
+    };
+  };
+
+  // Perform the query
+  const { data, error } = await supabase
+    .from('stream_sessions')
+    .select('stream_id, streams(type)')
+    .eq('id', session_id)
+    .single<StreamTypeResponse>();
+
+  if (error) {
+    console.error('Error fetching stream type:', error);
+    return null;
+  }
+
+  return data?.streams.type;
+};

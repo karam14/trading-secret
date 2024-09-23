@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchCreatorId, fetchRoomName } from '@/actions/stream-page.actions';
+import { fetchCreatorId, fetchRoomName, fetchStreamType } from '@/actions/stream-page.actions';
 import { StreamPlayer } from '@/components/streaming/stream-player';
 import { getUserById } from '@/actions/get-user';
 import { useEffect, useState } from 'react';
@@ -18,6 +18,7 @@ function LivePage() {
   const [isValidId, setIsValidId] = useState<boolean>(true);
   const [ownId, setOwnId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [streamType, setStreamType] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // New state for error message
   const streamStatus = useStreamStatus(roomName);
 
@@ -39,6 +40,7 @@ function LivePage() {
           setErrorMessage('خطأ في جلب اسم الغرفة.');
           return;
         }
+        
 
         const fetchedUser = await getUserById(userId);
         if (!fetchedUser) {
@@ -57,11 +59,17 @@ function LivePage() {
           setErrorMessage('خطأ في جلب معرف الجلسة.');
           return;
         }
+        const fetchedStreamType = await fetchStreamType(sessionId);
+        if (!fetchedStreamType) {
+          setErrorMessage('خطأ في جلب نوع البث.');
+          return;
+        }
 
         setUser(fetchedUser);
         setRoomName(fetchedRoomName);
         setOwnId(self?.id);
         setSessionId(sessionId);
+        setStreamType(fetchedStreamType);
       } catch (error) {
         console.error('Error fetching data:', error);
         setErrorMessage('حدث خطأ أثناء جلب البيانات.');
@@ -92,7 +100,8 @@ function LivePage() {
     return <div>Loading...</div>; // Loading state while data is being fetched
   }
 
-  if (streamStatus !== 'active') {
+  if (streamStatus !== 'active' && streamStatus == 'ended') {
+    console.log('Stream status:', streamStatus);
     return (
 <div className="h-screen">
   <div className="flex justify-center items-center h-full w-full bg-white dark:bg-gray-900">
@@ -107,9 +116,9 @@ function LivePage() {
       </div>
     );
   }
-
+  console.log('Stream status:', streamStatus);
   return (
-    <StreamPlayer user={user} roomName={roomName} ownId={ownId || ''} sessionId={sessionId || ''} />
+    <StreamPlayer user={user} roomName={roomName} ownId={ownId || ''} sessionId={sessionId || ''} streamType={streamType || ''} />
   );
 }
 

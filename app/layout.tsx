@@ -6,9 +6,11 @@ import { ToastProvider } from "@/components/providers/toaster-provider";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import NextTopLoader from 'nextjs-toploader';
+import ClientLayout from './clientLayout';
+
 const DynamicThemeProvider = dynamic(() => import("next-themes").then(mod => mod.ThemeProvider), { ssr: false });
 
 const defaultUrl = process.env.VERCEL_URL
@@ -17,23 +19,18 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
+  title: "Viewzen Academy",
   description: "The fastest way to build apps with Next.js and Supabase",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={GeistSans.className}>
       <SpeedInsights />
-
       <Analytics />
+      <ClientLayout>
       <body>
-      <NextTopLoader />
-
+        <NextTopLoader />
         <DynamicThemeProvider attribute="class" defaultTheme="dark">
           <main>
             <ToastProvider />
@@ -41,6 +38,7 @@ export default function RootLayout({
           </main>
         </DynamicThemeProvider>
       </body>
+      </ClientLayout>
     </html>
   );
 }

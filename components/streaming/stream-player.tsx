@@ -3,6 +3,7 @@ import { LiveKitRoom } from "@livekit/components-react";
 import { cn } from "@/lib/utils";
 import { useViewerToken } from "@/hooks/use-viewer-token";
 import { Video, VideoSkeleton } from "./video";
+import { Audio } from "./audio"; // Import the Audio component
 import Chat from "./chat";
 
 type CustomUser = {
@@ -16,6 +17,7 @@ interface StreamPlayerProps {
   roomName: string;
   ownId: string;
   sessionId: string;
+  streamType: string; // Add streamType prop
 }
 
 export const StreamPlayer = ({
@@ -23,6 +25,7 @@ export const StreamPlayer = ({
   roomName,
   ownId,
   sessionId,
+  streamType, // Use the streamType prop
 }: StreamPlayerProps) => {
   const [showChat, setShowChat] = useState(false); // Control the visibility of the chat
   const { token } = useViewerToken(user, roomName);
@@ -50,7 +53,11 @@ export const StreamPlayer = ({
         )}
       >
         <div className="flex-grow space-y-4 lg:overflow-y-auto hidden-scrollbar pb-10">
-          <Video hostName={user.name} hostIdentity={user.name} onChatToggle={handleChatToggle} />
+          {streamType === "video" ? (
+            <Video hostName={user.name} hostIdentity={user.name} onChatToggle={handleChatToggle} />
+          ) : (
+            <Audio hostName={user.name} hostIdentity={user.name} onChatToggle={handleChatToggle} />
+          )}
         </div>
       </LiveKitRoom>
   
