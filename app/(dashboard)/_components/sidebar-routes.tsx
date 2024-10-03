@@ -1,4 +1,4 @@
-import { BarChart, Compass, Layout, List, Lock, Podcast } from "lucide-react";
+import { BarChart, Compass, Layout, List, Lock, Podcast, Crown } from "lucide-react";
 import SidebarItem from "./sidebar-item";
 import { usePathname } from "next/navigation";
 import {
@@ -7,8 +7,11 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { useState, useEffect } from "react";
+import { checkVip } from "@/actions/fetch-vip-section-data"; // Import the checkVip function
+import getUser from "@/actions/get-user-client"; // Import the getUser function to fetch user details
 
-const guestRoutes = [
+const guestRoutes = (isVipEnabled: boolean) => [
   {
     icon: Layout,
     label: "Dashboard",
@@ -31,11 +34,11 @@ const guestRoutes = [
     tooltip: "",
   },
   {
-    icon: Lock,
+    icon: isVipEnabled ? Crown : Lock,
     label: "VIP Section",
-    href: "#",
-    disabled: true,
-    tooltip: "قريباً",
+    href: "/vip-section",
+    disabled: !isVipEnabled,
+    tooltip: isVipEnabled ? "" : "قريباً",
   },
 ];
 
@@ -59,7 +62,26 @@ const teacherRoutes = [
 export const SidebarRoutes = ({ collapsed }: { collapsed: boolean }) => {
   const pathname = usePathname();
   const isTeacherPage = pathname?.includes("/teacher");
-  const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+
+  const [isVipEnabled, setIsVipEnabled] = useState(false);
+
+  useEffect(() => {
+    const fetchUserAndVipStatus = async () => {
+      const { user, error } = await getUser(); // Fetch user data
+      if (error || !user) {
+        console.error("Error fetching user:", error);
+        return;
+      }
+
+      const userId = user.id;
+      const isVip = await checkVip(userId); // Check VIP status based on the user ID
+      setIsVipEnabled(isVip);
+    };
+
+    fetchUserAndVipStatus(); // Call the function to fetch user and check VIP status
+  }, []);
+
+  const routes = isTeacherPage ? teacherRoutes : guestRoutes(isVipEnabled);
 
   return (
     <div className="flex flex-col w-full">

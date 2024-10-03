@@ -53,7 +53,7 @@ export const StreamPlayer = ({
         )}
       >
         <div className="flex-grow space-y-4 lg:overflow-y-auto hidden-scrollbar pb-10">
-          {streamType === "video" ? (
+          {streamType === "voice-video" ? (
             <Video hostName={user.name} hostIdentity={user.name} onChatToggle={handleChatToggle} />
           ) : (
             <Audio hostName={user.name} hostIdentity={user.name} onChatToggle={handleChatToggle} />

@@ -9,9 +9,12 @@ import { Pencil, Save, Trash, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 // @ts-expect-error - no types
-import { useRouter } from 'nextjs-toploader/app';import { Category } from "@/types/types";
+import { useRouter } from 'nextjs-toploader/app';
+import { Database } from "@/types/supabase";
+
 
 const supabase = createClient();
+type Category = Database['public']['Tables']['categories']['Row'];
 
 const CategoriesPage = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -50,13 +53,16 @@ const CategoriesPage = () => {
             if (data && data.name) {
                 setCategories(prev => [...prev, data]);
             } else {
+                if (data){
                 const { data: fetchedData } = await supabase
                     .from('categories')
                     .select('*')
                     .eq('id', data.id)
                     .single();
-                setCategories(prev => [...prev, fetchedData]);
-            }
+                if (fetchedData) {
+                    setCategories(prev => [...prev, fetchedData]);
+                }
+            }}
 
             setNewCategory("");
             toast.success("Category added successfully");

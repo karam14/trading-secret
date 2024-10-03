@@ -31,6 +31,63 @@ import {
   Settings,
   Bell,
 } from "lucide-react";
+const messages = [
+  {
+    id: 1,
+    content: "صفقة اليورو/دولار كانت ممتازة، شكراً للإشارة!",
+    timestamp: "2023-09-23 10:30",
+    reactions: {
+      likes: 120,
+      thumbsUp: 45,
+      thumbsDown: 5,
+      heart: 30,
+    },
+  },
+  {
+    id: 2,
+    content: "هذه الاستراتيجية الجديدة تظهر وعدًا كبيرًا.",
+    timestamp: "2023-09-23 11:15",
+    reactions: {
+      likes: 98,
+      thumbsUp: 50,
+      thumbsDown: 3,
+      heart: 25,
+    },
+  },
+  {
+    id: 3,
+    content: "صفقة الذهب الأخيرة كانت صعبة، لكننا خرجنا بأرباح جيدة.",
+    timestamp: "2023-09-23 12:00",
+    reactions: {
+      likes: 130,
+      thumbsUp: 60,
+      thumbsDown: 2,
+      heart: 40,
+    },
+  },
+  {
+    id: 4,
+    content: "هل توافقون على بيع بيتكوين الآن؟",
+    timestamp: "2023-09-23 14:45",
+    reactions: {
+      likes: 80,
+      thumbsUp: 30,
+      thumbsDown: 15,
+      heart: 20,
+    },
+  },
+  {
+    id: 5,
+    content: "النفط يبدو مستقرًا، فرصة شراء قادمة؟",
+    timestamp: "2023-09-23 15:30",
+    reactions: {
+      likes: 110,
+      thumbsUp: 40,
+      thumbsDown: 8,
+      heart: 35,
+    },
+  },
+];
 
 // Mock data for the provider
 const providerData = {
@@ -42,64 +99,7 @@ const providerData = {
   activeTrades: 3,
   revenue: 1200, // New revenue field
 };
-const messages = [
-    {
-      id: 1,
-      content: "صفقة اليورو/دولار كانت ممتازة، شكراً للإشارة!",
-      timestamp: "2023-09-23 10:30",
-      reactions: {
-        likes: 120,
-        thumbsUp: 45,
-        thumbsDown: 5,
-        heart: 30,
-      },
-    },
-    {
-      id: 2,
-      content: "هذه الاستراتيجية الجديدة تظهر وعدًا كبيرًا.",
-      timestamp: "2023-09-23 11:15",
-      reactions: {
-        likes: 98,
-        thumbsUp: 50,
-        thumbsDown: 3,
-        heart: 25,
-      },
-    },
-    {
-      id: 3,
-      content: "صفقة الذهب الأخيرة كانت صعبة، لكننا خرجنا بأرباح جيدة.",
-      timestamp: "2023-09-23 12:00",
-      reactions: {
-        likes: 130,
-        thumbsUp: 60,
-        thumbsDown: 2,
-        heart: 40,
-      },
-    },
-    {
-      id: 4,
-      content: "هل توافقون على بيع بيتكوين الآن؟",
-      timestamp: "2023-09-23 14:45",
-      reactions: {
-        likes: 80,
-        thumbsUp: 30,
-        thumbsDown: 15,
-        heart: 20,
-      },
-    },
-    {
-      id: 5,
-      content: "النفط يبدو مستقرًا، فرصة شراء قادمة؟",
-      timestamp: "2023-09-23 15:30",
-      reactions: {
-        likes: 110,
-        thumbsUp: 40,
-        thumbsDown: 8,
-        heart: 35,
-      },
-    },
-  ];
-  
+
 // Mock data for recent trades
 const recentTrades = [
   {
@@ -170,8 +170,7 @@ export default function ProviderDashboard() {
     setNewSignal({ ...newSignal, [e.target.name]: e.target.value });
   };
 
-  const handleSignalSubmit = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
+
   const handleEditTrade = (id: number, field: string, value: string) => {
     setTrades(
       trades.map((trade) =>
@@ -307,20 +306,13 @@ export default function ProviderDashboard() {
                           />
                         </TableCell>
                         <TableCell>
-                          <Button
-                            onClick={() => handleCloseTrade(trade.id, "مغلق")}
-                            variant="outline"
-                            size="sm"
-                            className="mb-2"
-                          >
-                            إغلاق
-                          </Button>
+
                           {trade.status === "نشط" && (
                             <>
                               {trade.currentPrice > trade.entryPrice ? (
                                 <Button
                                   onClick={() => handleCloseTrade(trade.id, "ربح")}
-                                  variant="success"
+                                  variant="default"
                                   size="sm"
                                   className="mb-2"
                                 >
@@ -355,7 +347,7 @@ export default function ProviderDashboard() {
               <CardDescription>إنشاء وإدارة إشارات التداول الخاصة بك</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSignalSubmit} className="space-y-4">
+              <form  className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="asset" className="text-sm font-medium">
@@ -505,7 +497,6 @@ export default function ProviderDashboard() {
                   <div key={message.id} className="border-b pb-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        {/* <p className="font-medium">{message.sender}</p> */}
                         <p className="text-sm text-muted-foreground">
                           {message.timestamp}
                         </p>
@@ -593,5 +584,4 @@ export default function ProviderDashboard() {
       </Tabs>
     </div>
   );
-}
 }

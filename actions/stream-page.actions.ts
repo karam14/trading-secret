@@ -1,13 +1,28 @@
-// actions/stream-page.actions.tsx
-
-import { useState, useEffect } from 'react';
+import { Database } from '@/types/supabase'; // Import generated types
 import { createClient } from '@/utils/supabase/client';
+import { useEffect, useState } from 'react';
 
 const supabase = createClient();
 
+type LiveStream = Database['public']['Tables']['streams']['Row'] & {
+  profile_view: {
+    name: string | null;
+    image_url: string | null;
+  };
+  stream_sessions: {
+    is_active: boolean | null;
+  }[];
+};
+
+type ScheduledStream = Database['public']['Tables']['streams']['Row'] & {
+  profile_view: {
+    name: string | null;
+  };
+};
+
 // Fetch live streams based on active sessions
 export const useLiveStreams = () => {
-  const [liveStreams, setLiveStreams] = useState<{ id: any; title: any; description: any; is_live: any; stream_sessions: { is_active: any; }[];profile_view: { name: any; image_url: any }[] }[]>([]);
+  const [liveStreams, setLiveStreams] = useState<LiveStream[]>([]);
 
   const fetchLiveStreams = async () => {
     const { data, error } = await supabase
@@ -17,9 +32,13 @@ export const useLiveStreams = () => {
         title, 
         description, 
         is_live,
+        created_at,
+        creator_id,
+        date,
+        stream_key,
+        type,
         stream_sessions (is_active),
         profile_view!streams_creator_id_fkey (name, image_url)
-
       `)
       .filter('stream_sessions.is_active', 'eq', true);
 
@@ -28,9 +47,10 @@ export const useLiveStreams = () => {
       return [];
     }
 
-    const activeStreams = data.filter(stream => stream.stream_sessions.some(session => session.is_active));
-    console.log("fetched the following:",activeStreams);
-    setLiveStreams(activeStreams);
+    const activeStreams = data?.filter((stream: any): stream is LiveStream => 
+      stream.stream_sessions.some((session: { is_active: any; }) => session.is_active) && stream.profile_view !== null
+    );
+    setLiveStreams(activeStreams || []);
   };
 
   useEffect(() => {
@@ -45,9 +65,9 @@ export const useLiveStreams = () => {
           schema: 'public',
           table: 'stream_sessions',
         },
-        async (payload) => {
+        async (payload: any) => {
           console.log('Realtime update received:', payload);
-          await fetchLiveStreams();  // Refetch live streams when a session changes
+          await fetchLiveStreams();
         }
       )
       .on(
@@ -57,9 +77,9 @@ export const useLiveStreams = () => {
           schema: 'public',
           table: 'streams',
         },
-        async (payload) => {
+        async (payload: any) => {
           console.log('Realtime update received:', payload);
-          await fetchLiveStreams();  // Refetch live streams when a stream changes
+          await fetchLiveStreams();
         }
       )
       .subscribe();
@@ -72,69 +92,52 @@ export const useLiveStreams = () => {
   return liveStreams;
 };
 
-// Fetch scheduled streams (non-live data)
+// Fetch scheduled streams
 export const useScheduledStreams = () => {
-    const [scheduledStreams, setScheduledStreams] = useState<{ id: any; title: any; description: any; date: any; profile_view: { name: any; }[] }[]>([]);
+  const [scheduledStreams, setScheduledStreams] = useState<ScheduledStream[]>([]);
 
-    const fetchScheduledStreams = async () => {
-        const { data, error } = await supabase
-        .from('streams')
-        .select(`
-          id, 
-          title, 
-          description, 
-          date,
-          profile_view!streams_creator_id_fkey (name)
-        `)
-            
-        console.log(data);
-        if (error) {
-            console.error('Error fetching scheduled streams:', error);
-            return [];
+  const fetchScheduledStreams = async () => {
+    const { data, error } = await supabase
+      .from('streams')
+      .select(`
+        *,
+        profile_view!streams_creator_id_fkey (name)
+      `);
+
+    if (error) {
+      console.error('Error fetching scheduled streams:', error);
+      return [];
+    }
+
+    const validScheduledStreams = (data || []).filter((stream: any): stream is ScheduledStream => stream.profile_view !== null);
+    setScheduledStreams(validScheduledStreams);
+  };
+
+  useEffect(() => {
+    fetchScheduledStreams();
+
+    const subscription = supabase
+      .channel('realtime-scheduled-streams')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'streams',
+        },
+        async (payload: any) => {
+          console.log('Realtime update received:', payload);
+          await fetchScheduledStreams();
         }
+      )
+      .subscribe();
 
-        
-
-        
-        setScheduledStreams(data);
+    return () => {
+      supabase.removeChannel(subscription);
     };
+  }, []);
 
-    useEffect(() => {
-        fetchScheduledStreams();
-        const subscription = supabase
-        .channel('realtime-scheduled-streams')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'stream_sessions',
-          },
-          async (payload) => {
-            console.log('Realtime update received:', payload);
-            await fetchScheduledStreams();  // Refetch live streams when a session changes
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'streams',
-          },
-          async (payload) => {
-            console.log('Realtime update received:', payload);
-            await fetchScheduledStreams();  // Refetch live streams when a stream changes
-          }
-        )
-        .subscribe();
-  
-      return () => {
-        supabase.removeChannel(subscription);
-      };
-    }, []);
-
-    return scheduledStreams;
+  return scheduledStreams;
 };
 
 
@@ -184,12 +187,12 @@ export const fetchStreamType = async (session_id: string) => {
     .from('stream_sessions')
     .select('stream_id, streams(type)')
     .eq('id', session_id)
-    .single<StreamTypeResponse>();
+    .single();
 
   if (error) {
     console.error('Error fetching stream type:', error);
     return null;
   }
 
-  return data?.streams.type;
+  return data?.streams?.type;
 };

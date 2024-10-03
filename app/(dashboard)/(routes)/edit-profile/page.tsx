@@ -84,7 +84,11 @@ export default function EditProfile() {
                 .getPublicUrl(data.path).data.publicUrl;
 
             setImageUrl(url || "");
-            await supabase.from("profiles").update({ image_url: url }).eq("id", userId);
+            if (userId) {
+              await supabase.from("profiles").update({ image_url: url }).eq("id", userId);
+            } else {
+              throw new Error("User ID is undefined");
+            }
             setLoading(false);
             toast.success("تم رفع الصورة بنجاح");
 

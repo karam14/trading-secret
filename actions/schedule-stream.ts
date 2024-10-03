@@ -11,7 +11,7 @@ export async function scheduleStream(stream: { title: string; description: strin
   if (!user || userError) {
     throw new Error("User not authenticated");
   }
-  const streamKey = (await supabase.from('profiles').select('stream_key').eq('id', user.id).single()).data?.stream_key;
+  const streamKey = (await supabase.from('profiles').select('stream_key').eq('id', user.id).single()).data?.stream_key ?? '';
   const { error } = await supabase.from('streams').insert({
     creator_id: user.id,
     title: stream.title,

@@ -98,7 +98,7 @@ const Chat: React.FC<ChatProps> = ({ sessionId, userId, onMinimize }) => {
                 <strong className="text-blue-600 dark:text-blue-400">{msg.userName}:</strong>
                 <p className="ml-2 text-gray-800 dark:text-gray-300">{msg.message}</p>
                 <span className="text-gray-500 dark:text-gray-400 text-xs">
-                  {new Date(msg.created_at).toLocaleTimeString()}
+                  {msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : 'Invalid date'}
                 </span>
               </div>
             ))

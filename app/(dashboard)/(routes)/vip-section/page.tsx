@@ -1,3 +1,4 @@
+"use client";
 import getUser, { getProfile } from "@/actions/get-user";
 import { Lock, Trophy, BarChart2, Users, ArrowUpIcon, ArrowDownIcon, AlertCircle, CheckCircle2, Clock, Star, Zap } from "lucide-react";
 import { redirect } from 'next/navigation';
@@ -10,63 +11,30 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
+import { getLeaderboardData, getLiveSignalsData, getOverallStats, checkVip } from "@/actions/fetch-vip-section-data";
+import { User } from "@supabase/supabase-js";
+import { Database } from "@/types/supabase";
 
-// Mock data for the leaderboard
-const leaderboardData = [
-  { id: 1, name: "أحمد محمد", avatar: "/placeholder.svg?height=40&width=40", winRatio: 0.75, score: 92 },
-  { id: 2, name: "فاطمة علي", avatar: "/placeholder.svg?height=40&width=40", winRatio: 0.72, score: 88 },
-  { id: 3, name: "محمود حسن", avatar: "/placeholder.svg?height=40&width=40", winRatio: 0.68, score: 85 },
-  { id: 4, name: "نورا أحمد", avatar: "/placeholder.svg?height=40&width=40", winRatio: 0.65, score: 82 },
-  { id: 5, name: "خالد عمر", avatar: "/placeholder.svg?height=40&width=40", winRatio: 0.62, score: 79 },
-];
-
-// Mock data for live signals
-const liveSignalsData = [
-  { 
-    id: 1, 
-    provider: { name: "أحمد محمد", avatar: "/placeholder.svg?height=40&width=40", isSuper: true },
-    pair: "EUR/USD", 
-    type: "شراء", 
-    entryPrice: 1.1850, 
-    tp1: 1.1870, 
-    tp2: 1.1890, 
-    tp3: 1.1910, 
-    sl: 1.1820, 
-    status: "جديد", 
-    timestamp: new Date().getTime(),
-    description: "توقع ارتفاع اليورو مقابل الدولار بعد بيانات التضخم الأخيرة."
-  },
-  { 
-    id: 2, 
-    provider: { name: "فاطمة علي", avatar: "/placeholder.svg?height=40&width=40", isSuper: false },
-    pair: "GOLD", 
-    type: "بيع", 
-    entryPrice: 1788.50, 
-    tp1: 1785.00, 
-    tp2: 1782.00, 
-    tp3: 1780.00, 
-    sl: 1795.00, 
-    status: "نشط", 
-    timestamp: new Date().getTime() - 300000,
-    description: "توقع انخفاض الذهب بسبب ارتفاع عوائد السندات الأمريكية."
-  },
-  { 
-    id: 3, 
-    provider: { name: "محمود حسن", avatar: "/placeholder.svg?height=40&width=40", isSuper: false },
-    pair: "BTC/USD", 
-    type: "شراء", 
-    entryPrice: 45000, 
-    tp1: 45500, 
-    tp2: 46000, 
-    tp3: 46500, 
-    sl: 44500, 
-    status: "مكتمل", 
-    timestamp: new Date().getTime() - 900000,
-    description: "اختراق مستوى مقاومة هام للبيتكوين."
-  },
-];
+interface LeaderboardProvider {
+  id: string | null;
+  name: string | null;
+  avatar: string;
+  winRatio: number;
+  score: number;
+}
 
 function Leaderboard() {
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardProvider[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data: LeaderboardProvider[] = await getLeaderboardData();
+      setLeaderboardData(data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -80,8 +48,10 @@ function Leaderboard() {
               <div className="flex items-center gap-4 flex-1">
                 <span className="font-bold text-lg">{index + 1}</span>
                 <Avatar>
-                  <AvatarImage src={provider.avatar} alt={provider.name} />
-                  <AvatarFallback>{provider.name.slice(0, 2)}</AvatarFallback>
+                  <AvatarImage src={provider.avatar} alt={provider.name || ''} />
+                  <AvatarFallback>
+  {provider.name?.split(' ').map(word => word.charAt(0)).join(' ')}
+</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">{provider.name}</p>
@@ -97,7 +67,51 @@ function Leaderboard() {
   );
 }
 
+type Signal = Database['public']['Tables']['live_signals']['Row'] & {
+  provider: {
+    name: string | null;
+    avatar: string;
+    isSuper: boolean | null;
+  };
+};
+
+function LiveSignals() {
+  const [liveSignalsData, setLiveSignalsData] = useState<Signal[]>([]);
+
+  useEffect(() => {
+    getLiveSignalsData().then((data) => {
+      setLiveSignalsData(data);
+    });
+  }, []);
+
+  return (
+    <TooltipProvider>
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">الإشارات الحية</h2>
+        </div>
+        <div className="space-y-4">
+          {liveSignalsData.map((signal) => (
+            <SignalBlock key={signal.id} signal={signal} />
+          ))}
+        </div>
+      </div>
+    </TooltipProvider>
+  );
+}
+
 function OverallStats() {
+  const [stats, setStats] = useState({ avgWinRatio: 0, avgScore: 0 });
+
+  useEffect(() => {
+    getOverallStats().then((data) => {
+      setStats({
+        avgWinRatio: Number(data.avgWinRatio),
+        avgScore: Number(data.avgScore),
+      });
+    });
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -109,29 +123,22 @@ function OverallStats() {
           <div>
             <div className="flex justify-between mb-2">
               <span>متوسط نسبة الفوز</span>
-              <span className="font-bold">68.4%</span>
+              <span className="font-bold">{stats.avgWinRatio}%</span>
             </div>
-            <Progress value={68.4} />
+            <Progress value={stats.avgWinRatio} />
           </div>
           <div>
             <div className="flex justify-between mb-2">
               <span>متوسط النقاط</span>
-              <span className="font-bold">85.2</span>
+              <span className="font-bold">{stats.avgScore}</span>
             </div>
-            <Progress value={85.2} />
-          </div>
-          <div>
-            <div className="flex justify-between mb-2">
-              <span>عدد المزودين النشطين</span>
-              <span className="font-bold">42</span>
-            </div>
+            <Progress value={stats.avgScore} />
           </div>
         </div>
       </CardContent>
     </Card>
   );
 }
-
 const getStatusBadge = (status: string) => {
   switch (status) {
     case "جديد":
@@ -145,34 +152,19 @@ const getStatusBadge = (status: string) => {
   }
 }
 
-interface Signal {
-  id: number;
-  provider: {
-    name: string;
-    avatar: string;
-    isSuper: boolean;
-  };
-  pair: string;
-  type: string;
-  entryPrice: number;
-  tp1: number;
-  tp2: number;
-  tp3: number;
-  sl: number;
-  status: string;
-  timestamp: number;
-  description: string;
-}
 
+// Adjust the SignalBlock component to work with the type
 const SignalBlock = ({ signal }: { signal: Signal }) => (
-  <Card className={`mb-4 ${signal.provider.isSuper ? 'border-2 border-yellow-400' : ''}`}>
+  
+  <Card className={`mb-4 ${signal.provider?.isSuper ? 'border-2 border-yellow-400' : ''}`}>
     <CardContent className="p-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
         <div className="flex items-center space-x-4 space-x-reverse">
           <Avatar className="w-12 h-12">
-            <AvatarImage src={signal.provider.avatar} alt={signal.provider.name} />
-            <AvatarFallback>{signal.provider.name.slice(0, 2)}</AvatarFallback>
-          </Avatar>
+            <AvatarImage src={signal.provider?.avatar ?? ''} alt={signal.provider.name || ''} />
+            <AvatarFallback>
+  {signal.provider?.name?.split(' ').map(word => word.charAt(0)).join(' ')}
+</AvatarFallback>          </Avatar>
           <div>
             <div className="flex items-center">
               <h3 className="text-lg font-semibold">{signal.provider.name}</h3>
@@ -189,14 +181,14 @@ const SignalBlock = ({ signal }: { signal: Signal }) => (
                 </TooltipProvider>
               )}
             </div>
-            <p className="text-sm text-muted-foreground">{new Date(signal.timestamp).toLocaleString('ar-EG')}</p>
+            <p className="text-sm text-muted-foreground">{new Date(signal.timestamp!).toLocaleString('ar-EG')}</p>
           </div>
         </div>
         <div className="flex items-center space-x-4 space-x-reverse">
           <span className="text-2xl font-bold pr-3">{signal.pair}</span>
-          <Badge variant={signal.type === "شراء" ? "success" : "destructive"} className="text-lg">
-            {signal.type === "شراء" ? <ArrowUpIcon className="w-4 h-4 ml-1" /> : <ArrowDownIcon className="w-4 h-4 ml-1" />}
-            {signal.type}
+          <Badge variant={signal.type === "buy" ? "success" : "destructive"} className="text-lg">
+            {signal.type === "buy" ? <ArrowUpIcon className="w-4 h-4 ml-1" /> : <ArrowDownIcon className="w-4 h-4 ml-1" />}
+            {signal.type === "buy" ? "شراء" : "بيع"}
           </Badge>
           {getStatusBadge(signal.status)}
         </div>
@@ -204,7 +196,7 @@ const SignalBlock = ({ signal }: { signal: Signal }) => (
       <div className="mt-4 grid grid-cols-2 md:grid-cols-6 gap-4">
         <div>
           <span className="text-sm text-muted-foreground">سعر الدخول</span>
-          <p className="font-semibold">{signal.entryPrice}</p>
+          <p className="font-semibold">{signal.entry_price}</p>
         </div>
         <div>
           <span className="text-sm text-muted-foreground">وقف الخسارة</span>
@@ -237,51 +229,34 @@ const SignalBlock = ({ signal }: { signal: Signal }) => (
       </div>
     </CardContent>
   </Card>
-)
+);
 
-function LiveSignals() {
-  return (
-    <TooltipProvider>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">الإشارات الحية</h2>
 
-        </div>
-        <div className="space-y-4">
-          {liveSignalsData.map((signal) => (
-            <SignalBlock key={signal.id} signal={signal} />
-          ))}
-        </div>
-      </div>
-    </TooltipProvider>
-  )
-}
+export default function VipSection() {
+  const [user, setUser] = useState<User | null>(null);
+  const [isVip, setIsVip] = useState(false);
 
-export default async function VipSection() {
-  // Get the authenticated user
-  const { user, error } = await getUser();
-  
-  if (error || !user) {
-    return (
-      <div className="p-6 space-y-8 text-right">
-        <div className="grid grid-cols-1 gap-4">
-          <BannerCard
-            icon={Lock}
-            label="أهلاً بك في قسم VIP"
-            description="يرجى تسجيل الدخول للوصول إلى هذه الصفحة."
-          />
-        </div>
-        <div className="flex justify-center">
-          <LoginButton />
-        </div>
-      </div>
-    );
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { user, error } = await getUser();
+
+      if (!error && user) {
+        setUser(user);
+        console.log(user);
+
+        const vipStatus = await checkVip(user.id);
+        setIsVip(vipStatus);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (!user) {
+    return <div>Loading...</div>;
   }
 
-  // Fetch user profile to check VIP status
-  const profile = await getProfile(user.id);
-
-  if (!profile || !profile[0]?.vip) {
+  if (!isVip) {
     return (
       <div className="p-6 space-y-8 text-right">
         <div className="grid grid-cols-1 gap-4">
@@ -297,32 +272,19 @@ export default async function VipSection() {
 
   return (
     <div className="p-6 space-y-8 text-right">
-      {/* <h2 className="text-3xl font-bold text-center">👑 أهلاً بك في قسم VIP 👑</h2>
-
-      <div className="relative p-8 bg-gray-800 dark:bg-gray-900 rounded-xl shadow-lg flex flex-col items-center justify-center text-gray-300 mb-8">
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-lg rounded-xl"></div>
-        <Lock className="w-16 h-16 text-gray-400 z-10" />
-        <p className="text-xl font-semibold mt-4 z-10">مرحباً بك في منطقة VIP الخاصة</p>
-        <p className="text-lg mt-2 z-10">استمتع بالوصول الحصري إلى تحليلات المتداولين وإحصائيات الأداء</p>
-      </div> */}
-
       <Tabs defaultValue="live-signals" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="live-signals">
-            <Zap className="w-4 h-4 mr-2" />
-            الإشارات الحية
+            <Zap className="w-4 h-4 mr-2" /> الإشارات الحية
           </TabsTrigger>
           <TabsTrigger value="leaderboard">
-            <Trophy className="w-4 h-4 mr-2" />
-            المتصدرون
+            <Trophy className="w-4 h-4 mr-2" /> المتصدرون
           </TabsTrigger>
           <TabsTrigger value="stats">
-            <BarChart2 className="w-4 h-4 mr-2" />
-            الإحصائيات
+            <BarChart2 className="w-4 h-4 mr-2" /> الإحصائيات
           </TabsTrigger>
           <TabsTrigger value="providers">
-            <Users className="w-4 h-4 mr-2" />
-            جميع المزودين
+            <Users className="w-4 h-4 mr-2" /> جميع المزودين
           </TabsTrigger>
         </TabsList>
         <TabsContent value="live-signals">
@@ -333,17 +295,6 @@ export default async function VipSection() {
         </TabsContent>
         <TabsContent value="stats">
           <OverallStats />
-        </TabsContent>
-        <TabsContent value="providers">
-          <Card>
-            <CardHeader>
-              <CardTitle>جميع مزودي إشارات التداول</CardTitle>
-              <CardDescription>قائمة كاملة بجميع مزودي الإشارات المعتمدين</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>هذا القسم سيحتوي على قائمة كاملة لجميع مزودي إشارات التداول مع تفاصيل إضافية وخيارات للتصفية والبحث.</p>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>
