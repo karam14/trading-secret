@@ -1,74 +1,41 @@
 import { Database } from "@/types/supabase";
 import { createClient } from "@/utils/supabase/client";
 
-// Fetch leaderboard data from Supabase
+// Fetch leaderboard data (top 10 providers) from the 'providers' table in Supabase
 export async function getLeaderboardData() {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('leaderboard')
-      .select('provider_id, win_ratio, score, providers!inner(id, profile_id, profiles(name, image_url))')
-      .order('score', { ascending: false });
-  
-    if (error) {
-      console.error('Error fetching leaderboard data:', error);
-      return [];
-    }
-  
-    return data.map(entry => ({
-      id: entry.provider_id,
-      name: entry.providers.profiles!.name,
-      avatar: entry.providers.profiles!.image_url || '/default-avatar.png', // Fallback if no avatar
-      winRatio: entry.win_ratio,
-      score: entry.score
-    }));
+  const supabase = createClient();
+
+  // Fetch top 10 providers based on their score from the 'providers' table
+  const { data, error } = await supabase
+    .from('providers')
+    .select(`
+      id, 
+      win_ratio, 
+      score, 
+      profiles (
+        name, 
+        image_url
+      )
+    `)
+    .order('score', { ascending: false }) // Order by score in descending order
+    .limit(10); // Limit the results to the top 10
+
+  if (error) {
+    console.error('Error fetching leaderboard data:', error);
+    return [];
   }
 
-  interface LiveSignal {
-    id: string;
-    pair: string;
-    type: string;
-    entry_price: number;
-    tp1: number;
-    tp2: number;
-    tp3: number;
-    sl: number;
-    status: string;
-    timestamp: string;
-    description: string;
-    providers: {
-      id: string;
-      is_super: boolean;
-      profile_id: string;
-      profiles: {
-        name: string;
-        image_url: string | null;
-      };
-    };
-  }
-  // Define explicit types for the nested relationship
-  interface LiveSignal {
-    id: string;
-    pair: string;
-    type: string;
-    entry_price: number;
-    tp1: number;
-    tp2: number;
-    tp3: number;
-    sl: number;
-    status: string;
-    timestamp: string;
-    description: string;
-    providers: {
-      id: string;
-      is_super: boolean;
-      profile_id: string;
-      profiles: {
-        name: string;
-        image_url: string | null;
-      };
-    };
-  }
-  
+  // Map the data to the expected format
+  return data.map(entry => ({
+    id: entry.id,
+    name: entry.profiles?.name || 'Unknown Provider', // Fallback if no name
+    avatar: entry.profiles?.image_url || '/default-avatar.png', // Fallback if no avatar
+    winRatio: entry.win_ratio,
+    score: entry.score
+  }));
+}
+
+
   // Fetch live signals data from Supabase
 // Modify getLiveSignalsData function to return data matching the Signal type
 export async function getLiveSignalsData() {
@@ -88,6 +55,7 @@ export async function getLiveSignalsData() {
         status, 
         timestamp, 
         description, 
+        closing_price,
         providers (
             id,
           is_super, 
@@ -112,8 +80,10 @@ export async function getLiveSignalsData() {
         status: signal.status,
         timestamp: signal.timestamp,
         description: signal.description,
+        closing_price: signal.closing_price,
         provider_id: signal.providers?.id || null,  // Add provider_id as expected by Signal type
         provider: {
+          id : signal.providers?.id || null,
           name: signal.providers?.profile_view?.name || 'Unknown',  // Fallback to 'Unknown' if name is not available
           avatar: signal.providers?.profile_view?.image_url || '',
           isSuper: signal.providers?.is_super || false
@@ -132,8 +102,10 @@ export async function getLiveSignalsData() {
       status: signal.status,
       timestamp: signal.timestamp,
       description: signal.description,
+      closing_price: signal.closing_price,
       provider_id: signal.providers?.id || null,  // Add provider_id as expected by Signal type
       provider: {
+        id : signal.providers?.id || null,
         name: signal.providers?.profile_view?.name || 'Unknown',  // Fallback to 'Unknown' if name is not available
         avatar: signal.providers?.profile_view?.image_url || '/default-avatar.png',
         isSuper: signal.providers?.is_super || false
@@ -193,3 +165,44 @@ export async function checkVip(userId: string) {
       return false;
     }
   }
+
+
+// Fetch provider data based on provider_id
+export async function fetchProviderData(providerId: string) {
+  const supabase = createClient();
+
+  try {
+    // Fetch provider details
+    const { data: providerData, error: providerError } = await supabase
+      .from("providers")
+      .select("win_ratio, score, is_super, profile_view(name, image_url)")
+      .eq("id", providerId)
+      .single();
+    console.log(providerData);
+    if (providerError || !providerData) {
+      console.error("Error fetching provider data:", providerError);
+      return null;
+    }
+
+    // Fetch recent live signals (as a substitute for trades)
+    const { data: recentSignals, error: signalsError } = await supabase
+      .from("live_signals")
+      .select("id, pair, type, status, entry_price, timestamp, closing_price, tp1, tp2, tp3")
+      .eq("provider_id", providerId)
+      .order("timestamp", { ascending: false })
+      .limit(5);  // Limit to the 5 most recent signals
+
+    if (signalsError) {
+      console.error("Error fetching recent signals:", signalsError);
+      return null;
+    }
+
+    return {
+      provider: providerData,
+      recentSignals: recentSignals || [],
+    };
+  } catch (error) {
+    console.error("Error fetching provider data:", error);
+    return null;
+  }
+}

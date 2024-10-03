@@ -1,9 +1,7 @@
 "use client";
-import getUser, { getProfile } from "@/actions/get-user";
+import getUser from "@/actions/get-user";
 import { Lock, Trophy, BarChart2, Users, ArrowUpIcon, ArrowDownIcon, AlertCircle, CheckCircle2, Clock, Star, Zap } from "lucide-react";
-import { redirect } from 'next/navigation';
 import { BannerCard } from "./_components/banner-card";
-import LoginButton from "./_components/login-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,6 +13,8 @@ import { useEffect, useState } from "react";
 import { getLeaderboardData, getLiveSignalsData, getOverallStats, checkVip } from "@/actions/fetch-vip-section-data";
 import { User } from "@supabase/supabase-js";
 import { Database } from "@/types/supabase";
+import Link from "next/link";
+
 
 interface LeaderboardProvider {
   id: string | null;
@@ -23,6 +23,7 @@ interface LeaderboardProvider {
   winRatio: number;
   score: number;
 }
+
 
 function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardProvider[]>([]);
@@ -49,12 +50,12 @@ function Leaderboard() {
                 <span className="font-bold text-lg">{index + 1}</span>
                 <Avatar>
                   <AvatarImage src={provider.avatar} alt={provider.name || ''} />
-                  <AvatarFallback>
-  {provider.name?.split(' ').map(word => word.charAt(0)).join(' ')}
-</AvatarFallback>
+                  <AvatarFallback>{provider.name?.split(' ').map(word => word.charAt(0)).join(' ')}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold">{provider.name}</p>
+                  <Link href={`/vip-section/provider-profile/${provider.id}`}>
+                    <p className="font-semibold hover:underline">{provider.name}</p>
+                  </Link>
                   <p className="text-sm text-muted-foreground">نسبة الفوز: {(provider.winRatio * 100).toFixed(1)}%</p>
                 </div>
               </div>
@@ -69,6 +70,7 @@ function Leaderboard() {
 
 type Signal = Database['public']['Tables']['live_signals']['Row'] & {
   provider: {
+    id : string | null;
     name: string | null;
     avatar: string;
     isSuper: boolean | null;
@@ -154,20 +156,21 @@ const getStatusBadge = (status: string) => {
 
 
 // Adjust the SignalBlock component to work with the type
+// Adjust the SignalBlock component to make provider names clickable
 const SignalBlock = ({ signal }: { signal: Signal }) => (
-  
   <Card className={`mb-4 ${signal.provider?.isSuper ? 'border-2 border-yellow-400' : ''}`}>
     <CardContent className="p-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
         <div className="flex items-center space-x-4 space-x-reverse">
           <Avatar className="w-12 h-12">
             <AvatarImage src={signal.provider?.avatar ?? ''} alt={signal.provider.name || ''} />
-            <AvatarFallback>
-  {signal.provider?.name?.split(' ').map(word => word.charAt(0)).join(' ')}
-</AvatarFallback>          </Avatar>
+            <AvatarFallback>{signal.provider?.name?.split(' ').map(word => word.charAt(0)).join(' ')}</AvatarFallback>
+          </Avatar>
           <div>
             <div className="flex items-center">
-              <h3 className="text-lg font-semibold">{signal.provider.name}</h3>
+              <Link href={`/vip-section/provider-profile/${signal.provider.id}`}>
+                <h3 className="text-lg font-semibold hover:underline">{signal.provider.name}</h3>
+              </Link>
               {signal.provider.isSuper && (
                 <TooltipProvider>
                   <Tooltip>
