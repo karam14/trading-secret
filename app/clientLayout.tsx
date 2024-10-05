@@ -54,6 +54,18 @@ function InstallPrompt() {
   const [installPromptEvent, setInstallPromptEvent] = useState<any>(null);
   const [hasPrompted, setHasPrompted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [showIosInstallPrompt, setShowIosInstallPrompt] = useState(false);
+
+  // Detect if device is on iOS
+  const isIos = () => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
+  };
+
+  // Detect if device is in standalone mode
+  const isInStandaloneMode = () => {
+    return 'standalone' in window.navigator && (window.navigator as any).standalone;
+  };
 
   useEffect(() => {
     // Check if the user has been prompted before
@@ -69,6 +81,12 @@ function InstallPrompt() {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Detect if the device is iOS and not in standalone mode (to show the install prompt)
+    if (isIos() && !isInStandaloneMode()) {
+      setShowIosInstallPrompt(true);
+      setOpen(true);
+    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -92,8 +110,6 @@ function InstallPrompt() {
     }
   };
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-
   return (
     <>
       {/* Blur and darken the background */}
@@ -101,17 +117,23 @@ function InstallPrompt() {
 
       {/* Modal Content */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90%] max-w-md p-6 bg-white rounded-lg shadow-lg">
-          <DialogHeader>
-            <DialogTitle>Install App</DialogTitle>
-            <DialogDescription>
-              Install the app to enjoy it on your device.
+      <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90%] max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <DialogHeader>
+          <DialogTitle className="text-gray-900 dark:text-gray-100">
+        Install App
+      </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-300">
+            Install the app to enjoy it on your device.
             </DialogDescription>
           </DialogHeader>
+
+          {/* Android install button */}
           {isInstallPromptAvailable && (
-            <Button onClick={handleInstallClick}>Install on Android</Button>
+            <Button onClick={handleInstallClick}>Install on your device</Button>
           )}
-          {isIOS && (
+
+          {/* iOS install instructions */}
+          {showIosInstallPrompt && (
             <p>
               To install this app on your iOS device, tap the share button
               <span role="img" aria-label="share icon"> ⎋ </span>
