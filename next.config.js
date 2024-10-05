@@ -1,16 +1,23 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    images: {
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable:false,
+   register: true,
+  // scope: '/app',
+  // sw: 'service-worker.js',
+  //...
+});
 
-        domains: ['utfs.io','hxxwdvxsyzoemhdmcrqc.supabase.co'],
-    },
-    experimental: {
-        serverActions: {
-          allowedOrigins: ["localhost:3000"],
-           allowedForwardedHosts: ["localhost:3000"],
-          // ^ You might have to use this property depending on your exact version.
-        }
-      }
+const nextConfig = {
+  images: {
+    domains: ['utfs.io', 'hxxwdvxsyzoemhdmcrqc.supabase.co'],
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["localhost:3000"],
+      allowedForwardedHosts: ["localhost:3000"],
+    }
+  }
 };
 
-module.exports = nextConfig;
+module.exports = withPWA(nextConfig);

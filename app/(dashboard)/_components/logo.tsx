@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export const Logo = ({ collapsed }: { collapsed: boolean }) => {
   return (
@@ -9,13 +10,16 @@ export const Logo = ({ collapsed }: { collapsed: boolean }) => {
         collapsed ? "w-5 h-5" : "w-35 h-20"
       )}
     >
+      <Link href="/">
       <Image
-        height={collapsed ? 20 : 500}
-        width={collapsed ? 20 : 500}
+        height={collapsed ? 20 : 110}
+        width={collapsed ? 20 : 110}
         alt="Logo"
-        src={collapsed ? "/logo-collapsed.svg" : "/logo.svg"}
-        className="transition-opacity duration-300 ease-in-out"
+        src={collapsed ? "/192w/192.png" : "/favicon.svg"}
+        className="transition-opacity duration-300 ease-in-out mb-1"
+        
       />
+      </Link>
     </div>
   );
 };

@@ -1,0 +1,25 @@
+import type { MetadataRoute } from 'next'
+ 
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Viewzen Academy',
+    short_name: 'Viewzen',
+    description: '',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#000000',
+    icons: [
+      {
+        src: '/192w/192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        src: '/512w/512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+    ],
+  }
+}
